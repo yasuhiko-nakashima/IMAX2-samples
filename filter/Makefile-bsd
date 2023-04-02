@@ -1,0 +1,51 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5                        
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6                        
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION        = -DDEBUG -DCYCLECNT
+PROGRAM       = filter
+CC            = gcc
+CFLAGS        = -m32 -I/usr/local/include -O3 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = ld
+LDFLAGS       = -m32
+LIBS          = -lX11 -lXext -lm -lc
+LIBFLAGS      = -L/usr/local/lib
+OBJS	      =	filter+rmm.o
+SRCS	      =	filter+rmm.c
+
+all:		$(PROGRAM)
+
+run:;		./$(PROGRAM) -f 81.ppm 82.ppm
+
+clean:;		rm -f $(OBJS) core *.s
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+###

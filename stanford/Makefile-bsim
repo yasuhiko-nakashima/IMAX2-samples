@@ -1,0 +1,52 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+PROJTOP	      = ../../
+OPTION        = -mstrict-align -DDEBUG -DCYCLECNT -DARMSIML
+PROGRAM       = ARM-Queens ARM-Towers ARM-Bubble ARM-FFT ARM-Intmm ARM-Mm ARM-Perm ARM-Puzzle ARM-Quick ARM-Trees
+CC            = aarch64-elf-gcc
+CFLAGS        = -I. -O3 $(OPTION) -mstrict-align
+AS            = aarch64-elf-as
+ASFLAGS       = 
+LD            = aarch64-elf-ld
+LDFLAGS       = -static -M $(PROJTOP)/lib/asim64-lib/_map 
+LIBS          = -lgcc -lm -lc
+LIBFLAGS      = -L$(PROJTOP)/lib/gcc/aarch64-elf/4.8.2/ -L$(PROJTOP)/aarch64-elf/lib/
+
+all:		$(PROGRAM)
+
+clean:;		rm -f Queens.o Towers.o Bubble.o FFT.o Intmm.o Mm.o Perm.o Puzzle.o Quick.o Trees.o core *~
+
+ARM-Queens:	Queens.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Towers:	Towers.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Bubble:	Bubble.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-FFT:	FFT.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Intmm:	Intmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Mm:		Mm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Perm:	Perm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Puzzle:	Puzzle.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Quick:	Quick.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+ARM-Trees:	Trees.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+###

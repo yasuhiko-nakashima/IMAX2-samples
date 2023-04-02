@@ -1,0 +1,3 @@
+#!/bin/sh
+
+./talign $* | sort -n

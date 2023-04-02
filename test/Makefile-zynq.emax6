@@ -1,0 +1,192 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION        = -mstrict-align -DDEBUG -DCYCLECNT -DARMZYNQ -DEMAX6
+PROGRAM       = test000-zynq.emax6 test007-zynq.emax6 test008-zynq.emax6 test016-zynq.emax6 test017-zynq.emax6 test018-zynq.emax6 test019-zynq.emax6 test020-zynq.emax6 test021-zynq.emax6 test022-zynq.emax6 test023-zynq.emax6 test024-zynq.emax6
+CPP           = cpp -P
+CC            = gcc
+CFLAGS        = -I. -O2 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = gcc
+LDFLAGS       = 
+LIBS          = -lm -lc -lX11 -lXext
+LIBFLAGS      = 
+OBJS	      =	test000-emax6.o test007-emax6.o test008-emax6.o test016-emax6.o test017-emax6.o test018-emax6.o test019-emax6.o test020-emax6.o test021-emax6.o test022-emax6.o test023-emax6.o test024-emax6.o
+SRCS	      =	test000.c test007.c test008.c test016.c test017.c test018.c test019.c test020.c test021.c test022.c test023.c test024.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~ *-mark.c *-cppo.c *-emax6.c *-emax6s?.c
+
+test000-zynq.emax6:     test000-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test000-emax6.o:	test000-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test000-emax6.c:	test000.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test007-zynq.emax6:     test007-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test007-emax6.o:	test007-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test007-emax6.c:	test007.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test008-zynq.emax6:     test008-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test008-emax6.o:	test008-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test008-emax6.c:	test008.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test016-zynq.emax6:     test016-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test016-emax6.o:	test016-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test016-emax6.c:	test016.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test017-zynq.emax6:     test017-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test017-emax6.o:	test017-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test017-emax6.c:	test017.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test018-zynq.emax6:     test018-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test018-emax6.o:	test018-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test018-emax6.c:	test018.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test019-zynq.emax6:     test019-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test019-emax6.o:	test019-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test019-emax6.c:	test019.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test020-zynq.emax6:     test020-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test020-emax6.o:	test020-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test020-emax6.c:	test020.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test021-zynq.emax6:     test021-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test021-emax6.o:	test021-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test021-emax6.c:	test021.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test022-zynq.emax6:     test022-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test022-emax6.o:	test022-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test022-emax6.c:	test022.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test023-zynq.emax6:     test023-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test023-emax6.o:	test023-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test023-emax6.c:	test023.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test024-zynq.emax6:     test024-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+test024-emax6.o:	test024-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+test024-emax6.c:	test024.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+###
+
+test000-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test007-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test008-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test016-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test017-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test018-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test019-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test020-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test021-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test022-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test023-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test024-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

@@ -1,0 +1,25 @@
+
+## Remote CAMERA
+
+PROJTOP	      = ../../
+OPTION        = -DDEBUG -DCYCLECNT
+PROGRAM       = remote-cam
+CC            = gcc
+CFLAGS        = -I/usr/local/include -O -msse2 -ffast-math $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = ld
+LDFLAGS       = 
+LIBS          = -lm -lX11 -lXext -lgcc -lv4l2
+LIBFLAGS      = -L/usr/lib64 -L/usr/lib
+OBJS	      =	remote-cam.o
+SRCS	      =	remote-cam.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f $(OBJS) core *.s
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+###

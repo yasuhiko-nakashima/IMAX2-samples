@@ -1,0 +1,108 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION        = -mstrict-align -DDEBUG -DCYCLECNT -DARMZYNQ -DEMAX6
+PROGRAM       = mm-zynq.emax6 inv-zynq.emax6 cnn-zynq.emax6 gather-zynq.emax6 gdepth-zynq.emax6
+CPP           = cpp -P
+CC            = gcc
+CFLAGS        = -I. -O2 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = gcc
+LDFLAGS       = 
+LIBS          = -lm -lc -lX11 -lXext
+LIBFLAGS      = 
+OBJS	      =	mm+rmm-emax6.o inv+rmm-emax6.o cnn+rmm-emax6.o gather+rmm-emax6.o gdepth+rmm-emax6.o
+SRCS	      =	mm+rmm.c inv+rmm.c cnn+rmm.c gather+rmm.c gdepth+rmm.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~ *-mark.c *-cppo.c *-emax6.c *-emax6s?.c
+
+mm-zynq.emax6:	mm+rmm-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+mm+rmm-emax6.o:	mm+rmm-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+mm+rmm-emax6.c:	mm+rmm.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+inv-zynq.emax6:	inv+rmm-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+inv+rmm-emax6.o:	inv+rmm-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+inv+rmm-emax6.c:	inv+rmm.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+cnn-zynq.emax6: cnn+rmm-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+cnn+rmm-emax6.o:	cnn+rmm-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+cnn+rmm-emax6.c:	cnn+rmm.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+gather-zynq.emax6: gather+rmm-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+gather+rmm-emax6.o:	gather+rmm-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+gather+rmm-emax6.c:	gather+rmm.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+gdepth-zynq.emax6: gdepth+rmm-emax6.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+gdepth+rmm-emax6.o:	gdepth+rmm-emax6.c
+		$(CC) $(CFLAGS) -c $<
+
+gdepth+rmm-emax6.c:	gdepth+rmm.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(OPTION) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+###
+
+mm+rmm-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+inv+rmm-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+cnn+rmm-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+gather+rmm-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+gdepth+rmm-emax6.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

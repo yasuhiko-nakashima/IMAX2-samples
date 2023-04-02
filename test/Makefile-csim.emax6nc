@@ -1,0 +1,216 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION	      = -mstrict-align -DDEBUG -DCYCLECNT -DARMSIML -DEMAX6
+PROGRAM       =	test000-csim.emax6nc test001-csim.emax6nc test002-csim.emax6nc test003-csim.emax6nc test004-csim.emax6nc test005-csim.emax6nc test006-csim.emax6nc test007-csim.emax6nc test008-csim.emax6nc test009-csim.emax6nc test011-csim.emax6nc test012-csim.emax6nc test013-csim.emax6nc test014-csim.emax6nc test015-csim.emax6nc test016-csim.emax6nc test017-csim.emax6nc test018-csim.emax6nc test019-csim.emax6nc test020-csim.emax6nc test021-csim.emax6nc test022-csim.emax6nc test023-csim.emax6nc test024-csim.emax6nc
+CPP           = aarch64-elf-cpp
+CC            = aarch64-elf-gcc
+CFLAGS        = -I. -O3 -Wno-attributes $(OPTION)
+AS            = aarch64-elf-as
+ASFLAGS       = 
+LD            = aarch64-elf-ld
+LDFLAGS       =	-static -M $(PROJTOP)/lib/asim64-lib/_map
+LIBS          =	-lgcc -lm -lc
+LIBFLAGS      = -L$(PROJTOP)/lib/gcc/aarch64-elf/4.8.2/ -L$(PROJTOP)/aarch64-elf/lib/
+OBJS          = test000.o test001.o test002.o test003.o test004.o test005.o test006.o test007.o test008.o test009.o test011.o test012.o test013.o test014.o test015.o test016.o test017.o test018.o test019.o test020.o test021.o test022.o test023.o test024.o
+SRCS          = test000.c test001.c test002.c test003.c test004.c test005.c test006.c test007.c test008.c test009.c test011.c test012.c test013.c test014.c test015.c test016.c test017.c test018.c test019.c test020.c test021.c test022.c test023.c test024.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~
+
+test000-csim.emax6nc:	test000.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test000.o:	test000.c
+		$(CC) $(CFLAGS) -c $<
+
+test001-csim.emax6nc:	test001.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test001.o:	test001.c
+		$(CC) $(CFLAGS) -c $<
+
+test002-csim.emax6nc:	test002.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test002.o:	test002.c
+		$(CC) $(CFLAGS) -c $<
+
+test003-csim.emax6nc:	test003.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test003.o:	test003.c
+		$(CC) $(CFLAGS) -c $<
+
+test004-csim.emax6nc:	test004.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test004.o:	test004.c
+		$(CC) $(CFLAGS) -c $<
+
+test005-csim.emax6nc:	test005.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test005.o:	test005.c
+		$(CC) $(CFLAGS) -c $<
+
+test006-csim.emax6nc:	test006.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test006.o:	test006.c
+		$(CC) $(CFLAGS) -c $<
+
+test007-csim.emax6nc:	test007.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test007.o:	test007.c
+		$(CC) $(CFLAGS) -c $<
+
+test008-csim.emax6nc:	test008.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test008.o:	test008.c
+		$(CC) $(CFLAGS) -c $<
+
+test009-csim.emax6nc:	test009.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test009.o:	test009.c
+		$(CC) $(CFLAGS) -c $<
+
+test011-csim.emax6nc:	test011.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test011.o:	test011.c
+		$(CC) $(CFLAGS) -c $<
+
+test012-csim.emax6nc:	test012.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test012.o:	test012.c
+		$(CC) $(CFLAGS) -c $<
+
+test013-csim.emax6nc:	test013.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test013.o:	test013.c
+		$(CC) $(CFLAGS) -c $<
+
+test014-csim.emax6nc:	test014.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test014.o:	test014.c
+		$(CC) $(CFLAGS) -c $<
+
+test015-csim.emax6nc:	test015.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test015.o:	test015.c
+		$(CC) $(CFLAGS) -c $<
+
+test016-csim.emax6nc:	test016.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test016.o:	test016.c
+		$(CC) $(CFLAGS) -c $<
+
+test017-csim.emax6nc:	test017.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test017.o:	test017.c
+		$(CC) $(CFLAGS) -c $<
+
+test018-csim.emax6nc:	test018.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test018.o:	test018.c
+		$(CC) $(CFLAGS) -c $<
+
+test019-csim.emax6nc:	test019.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test019.o:	test019.c
+		$(CC) $(CFLAGS) -c $<
+
+test020-csim.emax6nc:	test020.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test020.o:	test020.c
+		$(CC) $(CFLAGS) -c $<
+
+test021-csim.emax6nc:	test021.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test021.o:	test021.c
+		$(CC) $(CFLAGS) -c $<
+
+test022-csim.emax6nc:	test022.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test022.o:	test022.c
+		$(CC) $(CFLAGS) -c $<
+
+test023-csim.emax6nc:	test023.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test023.o:	test023.c
+		$(CC) $(CFLAGS) -c $<
+
+test024-csim.emax6nc:	test024.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+test024.o:	test024.c
+		$(CC) $(CFLAGS) -c $<
+
+###
+
+test000.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test001.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test002.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test003.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test004.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test005.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test006.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test007.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test008.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test009.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test011.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test012.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test013.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test014.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test015.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test016.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test017.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test018.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test019.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test020.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test021.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test022.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test023.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+test024.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

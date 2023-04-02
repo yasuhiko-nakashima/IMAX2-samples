@@ -1,0 +1,31 @@
+
+export CPP     = cpp -P
+export CC      = gcc
+export CFLAGS  = -Wall -O3 -msse3 -Wno-unknown-pragmas -funroll-loops -I/usr/local/include
+export LDFLAGS = -L/usr/lib64 -L/usr/local/lib -lm -lX11 -lXext
+
+PROGRAM	      =	rsim-bsd
+OBJS          =	rsim.o cnnet.o mnist.o tensor.o random.o xdisp.o monitor.o
+SRCS          =	($(OBJS:.o=.c))
+HEADERS       =	tensor.h global.h random.h 
+
+all:		$(PROGRAM)
+
+$(PROGRAM):	$(OBJS)
+		$(CC)  $(OBJS) -o $(PROGRAM) $(LDFLAGS) $(CFLAGS)
+
+.c.o:		$(HEADERS)
+		$(CC) $(CFLAGS) -c $<
+
+train:;		./$(PROGRAM) -t
+
+clean:;		rm -rf *.o *~
+
+###
+
+cnnet.o:	cnnet.h random.h monitor.h
+mnist.o:	global.h tensor.h
+monitor.o:	monitor.h
+random.o:	tensor.h random.h
+rsim.o:		global.h tensor.h cnnet.h random.h monitor.h
+tensor.o:	global.h tensor.h

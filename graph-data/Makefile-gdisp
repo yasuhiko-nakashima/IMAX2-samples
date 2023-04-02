@@ -1,0 +1,18 @@
+
+### case SUN (X11)
+CFLAGS        = -I/usr/local/include -O3 -DSUN -DSUNX11 -UDIADIC
+LDFLAGS       = -L/usr/local/lib
+LIBFLAGS      = -lXext -lX11 -lm -lc -lpthread
+
+OBJS	      = gdisp.o
+
+SRCS	      = gdisp.c
+
+PROGRAM	      = gdisp
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(LDFLAGS) $(OBJS) -o $(PROGRAM) $(LIBFLAGS)
+
+clean:;		@rm -f $(OBJS) y.tab.c lex.yy.c core mon.out Make.log
+
+###

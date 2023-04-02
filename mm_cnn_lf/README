@@ -1,0 +1,11 @@
+【テスト一覧】
+
+mm-generate.c	… mm-orig生成用
+cnn-generate.c	… cnn-orig生成用
+
+mm.c		… 論文用に調整した構成
+inv.c		… VBGMM用逆行列
+cnn.c		… 3x3を6段分の論文構成
+gather.c	… gdepthを6段分の論文構成
+gdepth.c	… gdepthを4段分の論文構成
+----

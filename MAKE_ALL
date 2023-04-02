@@ -1,0 +1,57 @@
+#!/bin/csh
+ (cd;sput proj-arm64/sample/{filter,mm_cnn_lf,stencil,stringsearch,test,crypto,fft,sort}/{M*,*.[ch]})
+
+#(cd 4dimage;      ./MAKE_ALL)
+#(cd Kdijkstra;    ./MAKE_ALL)
+ (cd conv16;       ./MAKE_ALL)
+#(cd dijkstra;     ./MAKE_ALL)
+ (cd filter;       ./MAKE_ALL)
+ (cd mm_cnn_lf;    ./MAKE_ALL)
+ (cd stanford;     ./MAKE_ALL)
+ (cd stencil;      ./MAKE_ALL)
+ (cd stringsearch; ./MAKE_ALL)
+
+ (cd test;         ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/test;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/test/test*cent*)
+sssh 'ssh cadpc01 "(cd proj-arm64/sample/test;make -f Makefile-fugaku.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/test/test*fugaku*)
+
+ (cd crypto;       ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/crypto;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/crypto;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/crypto/sha256*cent*)
+
+ (cd fft;          ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/fft;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/fft;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/fft/fft*cent*)
+
+ (cd sort;         ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/sort;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/sort;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/sort/sort*cent*)
+
+ (cd tricount8;    ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/tricount8;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/tricount8;make -f Makefile-cent.pth all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/tricount8;make -f Makefile-cent.emax6nc all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/tricount8;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/tricount8/tricount*cent*)
+
+ (cd tricount9;    ./MAKE_ALL)
+
+#-----------------------------
+ (cd;sput proj-arm64/sample/{rsim,ssim}/{M*,*.[ch]})
+
+ (cd rsim;         ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/rsim;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/rsim;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/rsim/rsim-cent*)
+
+ (cd ssim;         ./MAKE_ALL)
+sssh 'ssh cad105  "(cd proj-arm64/sample/ssim;make -f Makefile-cent all clean)"'
+sssh 'ssh cad105  "(cd proj-arm64/sample/ssim;make -f Makefile-cent.emax6nc all clean)"'
+ (cd;sget proj-arm64/sample/ssim/ssim-cent*)
+sssh 'ssh cadpc01 "(cd proj-arm64/sample/ssim;make -f Makefile-fugaku all clean)"'
+ (cd;sget proj-arm64/sample/ssim/ssim-fugaku*)

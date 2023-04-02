@@ -1,0 +1,32 @@
+
+export CPP     = cpp -P
+export CC      = gcc
+export CFLAGS  = -Wall -O3 -msse3 -Wno-unknown-pragmas -funroll-loops -I/usr/local/include -I/usr/include/openblas -DCBLAS_GEMM -DEMAX6
+export LDFLAGS = -L/usr/lib64 -L/usr/local/lib -L/usr/lib64/atlas -lm -lrt -lopenblas -lX11 -lXext
+
+PROGRAM	      =	rsim-cent.emax6nc
+OBJS          =	rsim.o cnnet.o mnist.o tensor.o random.o xdisp.o monitor.o imax.o
+SRCS          =	($(OBJS:.o=.c))
+HEADERS       =	tensor.h global.h random.h 
+
+all:		$(PROGRAM)
+
+$(PROGRAM):	$(OBJS)
+		$(CC)  $(OBJS) -o $(PROGRAM) $(LDFLAGS) $(CFLAGS)
+
+.c.o:		$(HEADERS)
+		$(CC) $(CFLAGS) -c $<
+
+train:;		./$(PROGRAM) -t
+
+clean:;		rm -rf *.o *~
+
+###
+
+cnnet.o:	cnnet.h random.h monitor.h
+mnist.o:	global.h tensor.h
+monitor.o:	monitor.h
+random.o:	tensor.h random.h
+rsim.o:		global.h tensor.h cnnet.h random.h monitor.h
+tensor.o:	global.h tensor.h
+imax.o:		tensor.h cnnet.h emax6.h emax6lib.c

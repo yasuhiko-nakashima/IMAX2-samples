@@ -1,0 +1,921 @@
+¡ÚApproximate/¥¹¥Ñ¥¤¥ó/¥Õ¥£¥é¥á¥ó¥È¥·¥ê¡¼¥º¡Û                        2020/12/20
+
+¡ússim-20221020 ¡Ä SORT-MERGE(new MEX + conv-c2c)ÂÐ±þ
+                   SHA256(OP_MAJ,OP_CH,OP_ROTS),FFT(conv-c2c)ÂÐ±þ
+  filter/filter-zynq.emax6+dma		OK
+  mm_cnn_lf/mm-zynq.emax6+dma		OK
+  mm_cnn_lf/cnn-zynq.emax6+dma		OK
+  mm_cnn_lf/gdepth-zynq.emax6+dma	OK
+  mm_cnn_lf/inv-zynq.emax6+dma		OK
+  mm_cnn_lf/gather-zynq.emax6+dma	OK
+  stencil/stencil-zynq.emax6+dma	OK
+  stringsearch/search-zynq.emax6+dma	OK
+  test/test021-zynq.emax6+dma		OK
+  test/test022-zynq.emax6+dma		OK
+  test/test024-zynq.emax6+dma		OK
+  crypto/sha256-zynq.emax6+dma		OK
+  fft/fft-zynq.emax6+dma		OK
+  ssim/ssim-zynq.emax6+dma		OK
+  sort/sort-merge-zynq.emax6+dma	OK
+
+¡ússim-20220720 ¡Ä FT¥Ñ¥Ã¥Áºï½ü(dmrp_stat¤òLMRING_BUSY¤ËÄÉ²Ã)emax6lib.cÊÑ¹¹
+¡ússim-20220620 ¡Ä cnnÁØ¥Ñ¥é¥á¥¿ÊÑ¹¹
+  ./ssim-cent -r -i -I0     -C1 -F1 err=0.0130¡û
+  ./ssim-cent -r -i -I0     -C1 -F2 err=0.0362
+  ./ssim-cent -r -i -I0     -C1 -F3 err=0.0394
+  ./ssim-cent -r -i -I0     -C2 -F1 err=0.0099¡û
+  ./ssim-cent -r -i -I0     -C3 -F1 err=0.0078¡û
+  ./ssim-cent -r -i -I0 -V3 -C1 -F1 err=0.0365, -S err=0.0629
+  ./ssim-cent -r -i -I0 -V3 -C1 -F2 err=0.0616, -S err=0.2218
+  ./ssim-cent -r -i -I0 -V3 -C1 -F3 err=0.0651, -S err=0.8592
+  ./ssim-cent -r -i -I0 -V3 -C2 -F1 err=0.0147¡û
+  ./ssim-cent -r -i -I0 -V3 -C3 -F1 err=0.0104¡û
+  ./ssim-cent -r -i -I1     -C1 -F2 err=0.2989
+  ./ssim-cent -r -i -I1     -C1 -F3 err=0.2628
+  ./ssim-cent -r -i -I1     -C4 -F1 err=0.2160¡ý
+  ./ssim-cent -r -i -I1     -C6 -F2 err=0.2023¡ý
+  ./ssim-cent -r -i -I1 -V2 -C1 -F1 err=0.4543, -S err=0.7337
+  ./ssim-cent -r -i -I1 -V2 -C1 -F2 err=0.4296, -S err=0.8323
+  ./ssim-cent -r -i -I1 -V2 -C1 -F3 err=0.3967, -S err=0.8591
+¡ússim-20220610 ¡Ä WEIGHTLIMIT¤Ë¤è¤ê-1.0¡Á1.0¤ËÀ©¸Â
+  ./ssim-cent -r -i -I0     -C1 -F1 err=0.0130¡û
+  ./ssim-cent -r -i -I0     -C1 -F2 err=0.0362
+  ./ssim-cent -r -i -I0     -C1 -F3 err=0.0759
+  ./ssim-cent -r -i -I0     -C2 -F1 err=0.0091¡û
+  ./ssim-cent -r -i -I0     -C3 -F1 err=0.0083¡û
+  ./ssim-cent -r -i -I0 -V3 -C1 -F1 err=0.0365, -S err=0.0629
+  ./ssim-cent -r -i -I0 -V3 -C1 -F2 err=0.0616, -S err=0.2218¡ú²þÁ±
+  ./ssim-cent -r -i -I0 -V3 -C1 -F3 err=0.0653, -S err=0.8972
+  ./ssim-cent -r -i -I0 -V3 -C2 -F1 err=0.0136¡û
+  ./ssim-cent -r -i -I0 -V3 -C3 -F1 err=0.0103¡û
+  ./ssim-cent -r -i -I1     -C1 -F2 err=0.2989
+  ./ssim-cent -r -i -I1     -C1 -F3 err=0.2628
+  ./ssim-cent -r -i -I1     -C4 -F1 err=0.2378
+  ./ssim-cent -r -i -I1     -C6 -F2 err=0.2063¡ý
+  ./ssim-cent -r -i -I1 -V2 -C1 -F1 err=0.4543, -S err=0.7337
+  ./ssim-cent -r -i -I1 -V2 -C1 -F2 err=0.4296, -S err=0.8323
+  ./ssim-cent -r -i -I1 -V2 -C1 -F3 err=0.3967, -S err=0.8990
+¡ússim-20220601 ¡Ä WEIGHTLIMIT¤Ë¤è¤ê-2.0¡Á2.0¤ËÀ©¸Â
+  ./ssim-cent -r -i -I0     -C1 -F1 err=0.0130¡û
+  ./ssim-cent -r -i -I0     -C1 -F2 err=0.0216
+  ./ssim-cent -r -i -I0     -C1 -F3 err=0.0405
+  ./ssim-cent -r -i -I0     -C2 -F1 err=0.0091¡û
+  ./ssim-cent -r -i -I0     -C3 -F1 err=0.0083¡û
+  ./ssim-cent -r -i -I0 -V3 -C1 -F1 err=0.0365, -S err=0.0629
+  ./ssim-cent -r -i -I0 -V3 -C1 -F2 err=0.0424, -S err=0.3475¡ú²þÁ±
+  ./ssim-cent -r -i -I0 -V3 -C1 -F3 err=0.0432, -S err=0.8865
+  ./ssim-cent -r -i -I0 -V3 -C2 -F1 err=0.0136¡û
+  ./ssim-cent -r -i -I0 -V3 -C3 -F1 err=0.0103¡û
+  ./ssim-cent -r -i -I1     -C1 -F2 err=0.2946
+  ./ssim-cent -r -i -I1     -C1 -F3 err=0.2624
+  ./ssim-cent -r -i -I1     -C4 -F1 err=0.2395
+  ./ssim-cent -r -i -I1     -C6 -F2 err=0.2056¡ý
+  ./ssim-cent -r -i -I1 -V2 -C1 -F1 err=0.4543, -S err=0.7337
+  ./ssim-cent -r -i -I1 -V2 -C1 -F2 err=0.4272, -S err=0.8584
+  ./ssim-cent -r -i -I1 -V2 -C1 -F3 err=0.3948, -S err=0.8626
+¡ússim-20220501 ¡Ä DROPOUTÄÉ²Ã(dropÎ¨20%)
+  ./ssim-cent -r -i -I0     -C1 -F1 err=0.0130¡û
+  ./ssim-cent -r -i -I0     -C1 -F2 err=0.0205
+  ./ssim-cent -r -i -I0     -C1 -F3 err=0.0333
+  ./ssim-cent -r -i -I0     -C2 -F1 err=0.0091¡û
+  ./ssim-cent -r -i -I0     -C3 -F1 err=0.0083¡û
+  ./ssim-cent -r -i -I0 -V3 -C1 -F1 err=0.0365, -S err=0.0629
+  ./ssim-cent -r -i -I0 -V3 -C1 -F2 err=0.0410, -S err=0.8854
+  ./ssim-cent -r -i -I0 -V3 -C1 -F3 err=0.0384, -S err=0.8865
+  ./ssim-cent -r -i -I0 -V3 -C2 -F1 err=0.0136¡û
+  ./ssim-cent -r -i -I0 -V3 -C3 -F1 err=0.0103¡û
+  ./ssim-cent -r -i -I1     -C1 -F2 err=0.2960
+  ./ssim-cent -r -i -I1     -C1 -F3 err=0.2645
+  ./ssim-cent -r -i -I1     -C4 -F1 err=0.2395
+  ./ssim-cent -r -i -I1     -C6 -F2 err=0.2056¡ý
+  ./ssim-cent -r -i -I1 -V2 -C1 -F1 err=0.4543, -S err=0.7337
+  ./ssim-cent -r -i -I1 -V2 -C1 -F2 err=0.4220, -S err=0.9006
+  ./ssim-cent -r -i -I1 -V2 -C1 -F3 err=0.3906, -S err=0.9000
+               ¢¨Âç¥â¥Ç¥ëÆâ¤Ç¥¢¥ó¥µ¥ó¥Ö¥ë³Ø½¬¤¹¤ë¤Î¤Ç¤Ï¤Ê¤¯,80%¥â¥Ç¥ë¤òÂ¿½Å³Ø½¬
+               ssim-cent -t -I0 -C1 -F1 drp20% err=0.0130 25% 0.0131 30% 0.0127
+               ssim-cent -t -I0 -C3 -F1 drp20% err=0.0083 25% 0.0073 30% 0.0081
+  drp0% 0.2259 ssim-cent -t -I1 -C4 -F1 drp20% err=0.2395 25% 0.2307 30% 0.2244
+  drp0% 0.2168 ssim-cent -t -I1 -C6 -F2 drp20% err=0.2056 25% 0.2186 30% 0.2576
+¡ússim-20220301 ¡Ä reg_ctrl¤«¤éEMAX_DEPTH¤ò¼èÆÀ
+¡ússim-20220220 ¡Ä extract_1bit_edge:Laplacian 8-filter
+  ssim/ssim-zynq.emax6+dma -x -t -I1 -V2 -C4 -F1 TH=60  1.err=0.7230 2.err=0.6540 6.err=0.4218
+  ssim/ssim-cent           -x -t -I1 -V2 -C6 -F2 TH=50  0.9000
+                                                 TH=60  0.2583
+                                                 TH=70  0.2609   
+                                                 TH=80  0.2657
+                                                 TH=90  0.2681
+                                                 TH=100 0.2658
+                           -x -t -I0 -V3 -C1 -F1 TH=60  err=0.0365 96.4%
+                           -x -t -I0 -V3 -C3 -F1 TH=60  err=0.0108 98.9%
+¡ússim-20220120 ¡Ä conv-c2c-20220120¤ÇºÆ¥³¥ó¥Ñ¥¤¥ë
+¡ússim-20211210 ¡Ä exp=H3232,H1010ÄÉ²ÃÈÇconv-c2c¤ÇºÆ¥³¥ó¥Ñ¥¤¥ë
+¡üssim-20210920 ¡Ä ÁÂ¹ÔÎóµ¡Ç½ÄÉ²ÃÈÇconv-c2c¤ÇºÆ¥³¥ó¥Ñ¥¤¥ë
+¡üssim-20210801 ¡Ä conv-c2c-20210801¤Ë¤ÆLMX(drain/load)¹âÂ®²½
+¡üssim-20210701 ¡Ä emax6lib.c¤Îsoftu64()¤òcomparator·¿¤ËÊÑ¹¹
+  ssim/ssim-zynq.emax6+dma
+   SPU_COUT_BITS 12 r4=3 -x -i -r -I0 -V3 -C1 -F1 -S err=0.0614 (H=50)
+  ssim/ssim-bsd.emax6nc
+   SPU_COUT_BITS 12 r4=3 -x -i -r -I0 -V3 -C1 -F1 -S err=0.0625
+   SPU_COUT_BITS 15 r4=3 -x -i -r -I0 -V3 -C1 -F1 -S err=0.0509
+   SPU_COUT_BITS 31 r4=3 -x -i -r -I0 -V3 -C1 -F1 -S err=0.0489
+   SPU_COUT_BITS 12 r4=3 -x -i -r -I1 -V2 -C1 -F1 -S err=0.7432
+   SPU_COUT_BITS 15 r4=3 -x -i -r -I1 -V2 -C1 -F1 -S err=0.7357
+   SPU_COUT_BITS 31 r4=3 -x -i -r -I1 -V2 -C1 -F1 -S err=0.6445
+¡üssim-20210620 ¡Ä urand()ÄÉ²Ã
+   - ssim/ssim-cent.emax6nc -r -i -I0 -V3 -C1 -F1 -S err=0.06(16/32) err=0.04(12/32)
+¡üssim-20210607 ¡Ä OP_SFMA¤ò¥Ñ¥¤¥×¥é¥¤¥ó²½
+   - ssim/ssim-zynq.emax6+dma  -t -I1     -C4 -F1    err=0.7368(01)  err=0.2518(126)
+¡üssim-20210606 ¡Ä OP_SFMA¤ÈOP_SFMAMAG¤òÄÉ²Ã
+¡üssim-20210604 ¡Ä spu.c¤òemax6lib.c¤ËÈ¿±Ç.spu.cºï½ü.MNIST°Û¾ï¤ÏRMGRP¤¬Âç¤­²á¤®¤¿
+¡üssim-20210603 ¡Ä LoadParam/StoreParam¤Ëhbias/obiasÄÉ²Ã.spike¤Ç¤âhbias»ÈÍÑ
+¡üssim-20210602 ¡Ä UNARY8_FC IMAX£²ÈÇ 32/32¤ËÊÑ¹¹
+   - ssim/ssim-cent         -r -i -I0 -V3 -C1 -F1 -S err=0.06(16/32) err=0.04(12/32)
+¡üssim-20210601 ¡Ä UNARY8_FC IMAX½éÈÇ
+   - ssim/ssim-cent         -r -i -I0 -V3 -C1 -F1 -S err=0.50(64/32)
+¡üssim-20210520 ¡Ä UNARY8_FCÄÉ²Ã
+   - ssim/ssim-cent         -r -i -I0 -V3 -C1 -F1 -S err=0.06(16/32) err=0.04(12/32)
+¡üssim-20210315 ¡Ä ¥Ç¡¼¥¿Ê¬ÉÛ¤â²Ä»ë²½
+  -t -r -i
+   0  0  0 CAMERA   (random-W)
+   0  0  1 INFERENCE(random-W) one-shot
+   0  1  0 CAMERA   (reuse-W)
+   0  1  1 INFERENCE(reuse-W)  one-shot
+   1  0  0 TRAINING
+   1  0  1 TRAINING            one-shot
+   1  1  0 TRAINING (reuse-W)
+   1  1  1 TRAINING (reuse-W)  one-shot
+¡üssim-20210314 ¡Ä MAGNI=[12]. convs16tof32¤ò»î¤¹               MAGNI=1 MAGNI=2
+   - ssim/ssim-cent     -i -I0 -V3 -C1 -F1 -S: err=0.0337 -S err=0.0349  0.0351
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F1 -S: err=0.4453 -S err=0.4508  0.4507
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F2 -S: err=0.4179 -S err=0.5373  0.5291
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F3 -S: err=0.3789 -S err=0.6314  0.5067
+¡üssim-20210313 ¡Ä MAGNI=16.ReuseWeight(-r)ÄÉ²Ã -o¤È-i¤Îerrº¹¤Ïbias=0¤Ë¤è¤ë
+   - ssim/ssim-cent     -i -I0 -V3 -C1 -F1 -S: err=0.0337 -S err=0.0348
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F1 -S: err=0.4453 -S err=0.4494
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F2 -S: err=0.4179 -S err=0.5356
+   - ssim/ssim-cent     -i -I1 -V2 -C1 -F3 -S: err=0.3789 -S err=0.5032
+¡üssim-20210312 ¡Ä µì-i¤ò-I¤ËÊÑ¹¹¡¥-i¤Ï*.txt¤ò»È¤¦Inference_mode
+¡üssim-20210311 ¡Ä SPIKING_FC nout¿¶ÉýÄ´À°Ãæ
+  convs16tos8(&D, C, 6); // 6¸ÇÄê
+   - ssim/ssim-zynq.dma -t -I1     -C4 -F1   : 01 err=0.7368  64 err=0.2652
+   - ssim/ssim-cent     -t -I0 -V3 -C1 -F1 -S: 01 err=0.0726 105 err=0.0338¡û
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F1 -S: 01 err=0.6887 112 err=0.4469¡û
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F2 -S: 01 err=0.9000  35 err=0.6042¡ß
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F3 -S: 01 err=0.9000  35 err=0.8305¡ß
+¡üssim-20210310 ¡Ä SPIKING_FC nout¿¶ÉýÄ´À°Ãæ
+  wt¤¬°Õ³°¤Ë¾®¤µ¤¤ 32bit->8bit¤Ë¥ª¥Õ¥»¥Ã¥ÈÉ¬Í×¤«?
+  D10-40-ssim/ssim-cent -t -I0 -V3 -C1 -F1 -S: 01 err=0.0726 105 err=0.0338¡û
+  D10-30-ssim/ssim-cent -t -I1 -V2 -C1 -F1 -S: 01 err=0.6887 112 err=0.4469¡û
+  D10-50-ssim/ssim-cent -t -I1 -V2 -C1 -F2 -S: 01 err=0.9000  21 err=0.5579¡ß
+  D10-70-ssim/ssim-cent -t -I1 -V2 -C1 -F3 -S: 01 err=0.9000  32 err=0.7579¡ß
+¡üssim-20210309 ¡Ä SPIKING_FC nout¿¶ÉýÄ´À°Ãæ
+   - ssim/ssim-cent     -t -I0 -V3 -C1 -F1 -S: 01 err=0.4616  40 err=0.1146¡ß
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F1 -S: 01 err=0.8608 119 err=0.4647¡û
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F2 -S: 01 err=0.9000 100 err=0.4653¡û
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F3 -S: 01 err=0.9000  57 err=0.7328¡ß
+¡üssim-20210308 ¡Ä SPIKING_FC½àÈ÷Ãæ #undef  SPIKE8:½¾ÍèÊýË¡(MNIST err=0.04)
+                                    #define SPIKE8:SPIKE8  (MNIST err=0.05)
+				¦²½ÐÎÏ¥ì¥Ù¥ë¤ò1/4¤Ë¤·¤Æ err²þÁ±
+				½ÐÎÏ¥ì¥Ù¥ë¤¬Âç¤­²á¤®¤¿
+   - ssim/ssim-cent     -t -I0 -V3 -C1 -F1 -S: 01 err=0.0623  94 err=0.0333
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F1 -S: 01 err=0.6572 119 err=0.4563
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F2 -S: 01 err=0.9000  35 err=0.5719
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F3 -S: 01 err=0.9000  03 err=0.9000
+¡üssim-20210307 ¡Ä SPIKING_FC½àÈ÷Ãæ ssim/ssim-bsd -x -t -I0 -V3 -C1 -F1 -S
+                   PBL1-4:NCHIP/IMAP/OMAP=2/2/16 PBL1-5:NCHIP/IMAP/OMAP=2/2/16
+   - ssim/ssim-zynq.dma -t -I1     -C4 -F1   : 01 err=0.7368
+¡üssim-20210306 ¡Ä PBL1-4:IMAP/OMAP=2/16 PBL1-5:IMAP/OMAP=2/16
+                   IMXlen*K¤¬32K/4°Ê²¼¤Ê¤é¤Þ¤È¤á¤Æpload
+¡üssim-20210305 ¡Ä SMAX1ÇÑ»ß -S¥ª¥×¥·¥ç¥óÄÉ²Ã (³Ø½¬»þ¤ÏÈóspike,¼±ÊÌ»þ¤Ïspike)
+                   -o¥ª¥×¥·¥ç¥ó¤¬errºÇÄã»þ¤Î½Å¤ß¤ò¥Õ¥¡¥¤¥ë½ÐÎÏ¤¹¤ë¤è¤¦ÊÑ¹¹
+                   imax.c¤Çfor(ic/oc) IC/OC¥Á¥§¥Ã¥¯ÄÉ²Ã
+		   Uint cc0[][] -> Ull cc0[][]¤Ë½¤Àµ
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F1 -S: 04 err=0.5219 123 err=0.4453
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F2 -S: 04 err=0.5081 138 err=0.4179
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F3 -S: 04 err=0.8685 126 err=0.3789
+   - ssim/ssim-cent     -t -I1 -V2 -C1 -F3   : 04 err=0.8691 126 err=0.3801
+   - ssim/ssim-zynq.dma -t -I1     -C4 -F1   : 01 err=0.7224  28 err=0.3164
+   - ssim/ssim-cent     -t -I1     -C4 -F1   : 01 err=0.6360 121 err=0.2259
+   - ssim/ssim-cent     -t -I1     -C6 -F2   : 01 err=0.8070 132 err=0.2168
+¡üssim-20210304 ¡Ä µìSMAX1ÇÑ»ß µìNMAX1¤ò¿·SMAX1¤ËÊÑ¹¹
+¡üssim-20210302 ¡Ä conv-c2c-20210302¤Ç¤ÏPBL1-5:IMAP=4,OMAP=8...OK
+  PBL1-4:2+8 1-5:2+8(arch28) ssim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.7589
+  PBL1-4:4+8 1-5:2+8(arch28) ssim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.7224
+  PBL1-4:2+8 1-5:4+8(arch29) ssim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.7271
+  PBL1-4:4+8 1-5:4+8(arch28) ssim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.7224
+¡üssim-20210301 ¡Ä AXI<->LMMÃ±°Ì¤ò64bit¤«¤é32bit¤ËÊÑ¹¹ mop(len=4B¤ÎÇÜ¿ô)
+¡üssim-20210224 ¡Ä i,o->o,i
+¡üssim-20210223 ¡Ä ic0[ic][oc],kp[ic][oc]->ic0[oc][ic],kp[oc][ic]
+¡üssim-20210222 ¡Ä test020¤¬PBL1-5:IMAP=4,OMAP=8¤ÇÆ°ºî.È¿±Ç.¤¿¤Àssim¤Ï¼ýÂ«¤»¤º
+                   140MHz->100MHz¤ËÍî¤·¤Æ¤âÆ±¤¸
+¡üssim-20210208 ¡Ä ¡ûnmax.c.SPIKING_FCÀ°·Á¤Î¤ß.´ÊÎ¬²½¤Ç¤­¤¿¤Î¤Ç°ìÃ¶Åà·ë
+¡üssim-20210207 ¡Ä ¡ûnmax.c.NMORPHIC_FCºî¶ÈÃæ
+       *A -= fc_eta * ( wd * *A + *B);
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:  36/150 err=0.0400
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2:   7/150 err=0.4841
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3:   5/150 err=0.8170
+¡üssim-20210206 ¡Ä ¡ûnmax.c.NMORPHIC_FCºî¶ÈÃæ
+       ³°¤ËÌá¤·¤Æ *A -= fc_eta * ( wd * *A + *B);
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:   7/150 err=0.7477
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2:   7/150 err=0.4841
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3:   5/150 err=0.8170
+       *A -= fc_eta * *B;¤Ç¤Ï¡¤
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:  37/150 err=0.0400
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2:  85/150 err=0.4499
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3:  11/150 err=0.9000¡ß
+¡üssim-20210205 ¡Ä ¡ûnmax.c.NMORPHIC_FCºî¶ÈÃæ
+       Ãæ¤ËÆþ¤ì¤Æ *A -= (fc_eta * *B)/(batch_size/5);
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:   7/150 err=0.7478
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F2:  19/150 err=0.0409
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2:  43/150 err=0.4994
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3:   7/150 err=0.9000
+¡üssim-20210204 ¡Ä ¡ûnmax.c.batch_size¤òºÇ³°¤ËÃÖ¤¯DIGITAL_FC´°À®
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:   7/150 err=0.7477
+       - ssim/ssim-cent.nmax1 -t -I0 -V3 -C1 -F2:   7/150 err=0.0590
+       - ssim/ssim-cent.nmax1 -t -I0 -V3 -C1 -F3:   7/150 err=0.7550
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3:  40/150 err=0.4347
+       - ssim/ssim-cent       -t -I1 -V2 -C1 -F3: 126/150 err=0.3801
+¡üssim-20210203 ¡Ä ¡ûnmax.cºî¶ÈÃæ.nmac.c¤ËRef¤È¤·¤Æ½¾Íè¥³¡¼¥É¼è¤ê¹þ¤ß,obiasºï½ü
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F2:  10/150 err=0.0507
+       - ssim/ssim-bsd.nmax1  -t -I0 -V3 -C1 -F3:  11/150 err=0.5328
+       - ssim/ssim-cent       -t -I0 -V3 -C1 -F3: 109/150 err=0.0390
+       - ssim/ssim-cent       -t -I0 -V3 -C1 -F4:  63/150 err=0.9972
+¡üssim-20210202 ¡Ä ¡ûnmax.cºî¶ÈÃæ.Spike²Ä»ë²½
+       - ssim-zynq.emax6+dma  -t -I1     -C4 -F1:   1/150 err=0.7233
+¡üssim-20210201 ¡Ä ¡û¥¹¥Ñ¥¤¥¯´ÑÂ¬ÍÑ¤Ë,VectorwinÄÉ²Ã
+¡üssim-20210112 ¡Ä ¡ûNMAX:ºîÀ®ÅÓÃæ
+¡üssim-20210111 ¡Ä ¡ûSMAX:³Ø½ÑÊÑ³×,¥¹¥Ñ¥¤¥¯¥Ù¡¼¥¹ÈÆÍÑ·×»»(forÄ¥ÀèÀ¸) BackpropÍ­¤êÍ½Äê
+                   ¡ûNMAX:BLT,RNN¹½Â¤¤ÎSpike-Stochastic(forÌÚÂ¼ÀèÀ¸) BackpropÌµ¤·Í½Äê
+¡üssim-20210110 ¡Ä V1:slit(8ch)+corner(8ch)
+       - ssim/ssim-cent.nmax1 -t -I0     -C1 -F1:  82/150 err=0.0117
+       - ssim/ssim-cent.nmax1 -t -I0 -V3 -C1 -F1:  77/150 err=0.0347
+       - ssim/ssim-cent.nmax1 -t -I1     -C4 -F1: 121/150 err=0.2281
+       - ssim/ssim-cent.nmax1 -t -I1     -C6 -F2: 150/150 err=0.2138
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F1: 124/150 err=0.4502
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2:  95/150 err=0.4246
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3: 121/150 err=0.3779
+       - ssim/ssim-cent.nmax1 -t -I1 -V3 -C1 -F3:  82/150 err=0.3779
+¡üssim-20210101 ¡Ä CIFAR10/BLT¥Õ¥£¥é¥á¥ó¥Èspike siml¥â¥Ç¥ëºîÀ®³«»Ï(-DNMAX1)
+		   Makefile-cent.nmax1 ¡Ä CNNÌµ¤·¥¹¥Ñ¥¤¥óÈÇ
+                   bsdÈÇ¤Ïssim¤Ç¤Ï¥á¥â¥êÉÔÂ­,¤·¤«¤·ssim¥Ù¡¼¥¹¤È¤¹¤ë
+                   tensor.c:multiply_float2D¤Î¤ßnmax.c¤ËÀÜÂ³(NMAX1)
+                   CNNÉÔ»ÈÍÑÁ°Äó.¤Ê¤ª-C(>1)»ØÄê¤Ïmultiply_float2D¤ËÀÜÂ³¤¹¤ë¤Î¤Ç
+                   ·ë²ÌÅª¤ËÁ´¤Ænmax.c¤Îsgemm¤Ë¤Æ¼Â¹Ô
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F1: 121/150 err=0.4738
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F2: 121/150 err=0.4410
+       - ssim/ssim-cent.nmax1 -t -I1 -V2 -C1 -F3: 126/150 err=0.3907
+¡üssim-20201223 ¡Ä epoch=150,ETA1=1.375/16,WD1=1.375/1024,40epochËè/8
+       - ssim/ssim-cent -t -I1     -C6 -F2 (º¸±¦shift¤Î¤ß): iter=126 err=0.2244
+       - ssim/ssim-cent -t -I1     -C4 -F1 (º¸±¦shift¤Î¤ß): iter=122 err=0.2418
+       - ssim/ssim-cent.emax6nc V2 -C4 -F1 (º¸±¦shift¤Î¤ß): iter=  4 err=0.5758
+       - ssim/ssim-cent.emax6nc V3 -C4 -F1 (º¸±¦shift¤Î¤ß): iter=  5 err=0.5585
+¡üssim-20201222 ¡Ä epoch=150,ETA½é´üÃÍ1.25/16¤ËÊÑ¹¹,WD=0.00001f¸ÇÄê
+       - ssim/ssim-cent -t -I1     -C6 -F2 (º¸±¦shift¤Î¤ß): iter=149 err=0.2584
+       - ssim/ssim-cent -t -I1     -C4 -F1 (º¸±¦shift¤Î¤ß): iter=109 err=0.2604
+¡üssim-20201221 ¡Ä epoch=200,flip+º¸±¦shift.softf8()¤Ç¤âV3¤Ê¤é³Ø½¬²ÄÇ½
+       - ssim/ssim-cent -t -I1     -C6 -F2 (º¸±¦shift¤Î¤ß): iter=157 err=0.2252
+       - ssim/ssim-cent -t -I1     -C4 -F1 (º¸±¦shift¤Î¤ß): iter=194 err=0.2418
+       - ssim/ssim-cent.emax6nc    -C4 -F1 (º¸±¦shift¤Î¤ß): iter=  1 err=0.8996
+       - ssim/ssim-cent.emax6nc V2 -C4 -F1 (º¸±¦shift¤Î¤ß): iter=  4 err=0.5755
+       - ssim/ssim-cent.emax6nc V3 -C4 -F1 (º¸±¦shift¤Î¤ß): iter=  5 err=0.5401
+                                                                                                                  /*       MNIST-V3 epc1  epc2  epc7   C10-V3 epc1  epc2  epc7    exp    */
+	 //out_f32.exp = (out_f32.exp<  0)?0:(out_f32.exp<255)?out_f32.exp:255; out_f32.frac &= 0x7f0000; /* 16bit e=8 f=7 .0486 .0420 .0367 OK    * .7886 .7180 .5349 OK 130-71 */
+	 //out_f32.exp = (out_f32.exp<  0)?0:(out_f32.exp<255)?out_f32.exp:255; out_f32.frac &= 0x7e0000; /* 15bit e=8 f=6                         * .7689 .7413 .5847 OK 130-71 */
+	 //out_f32.exp = (out_f32.exp<  0)?0:(out_f32.exp<255)?out_f32.exp:255; out_f32.frac &= 0x7c0000; /* 14bit e=8 f=5                           .8191 .7660 .6286    131-73 */
+	 //out_f32.exp = (out_f32.exp<  0)?0:(out_f32.exp<255)?out_f32.exp:255; out_f32.frac &= 0x780000; /* 13bit e=8 f=4 .0534 .0462 .0390 OK      .8208 .8358 .7129    131-70 */
+	 //out_f32.exp = (out_f32.exp<  5)?0:(out_f32.exp<132)?out_f32.exp:132; out_f32.frac &= 0x780000; /* 12bit e=7 f=4 .0534 .0462 .0390 OK      .8208 .8358 .7129    131-70 */
+	 //out_f32.exp = (out_f32.exp< 69)?0:(out_f32.exp<132)?out_f32.exp:132; out_f32.frac &= 0x7c0000; /* 12bit e=6 f=5                           .8191 .7660 .6286    131-69 */
+	   out_f32.exp = (out_f32.exp<101)?0:(out_f32.exp<132)?out_f32.exp:132; out_f32.frac &= 0x7e0000; /* 12bit e=5 f=6                        ** .7671 .7409 .5891 OK 130-72 */
+	 //out_f32.exp = (out_f32.exp<117)?0:(out_f32.exp<132)?out_f32.exp:132; out_f32.frac &= 0x7f0000; /* 12bit e=4 f=7 .0487 .0422 .0366 OK      .8257 .8223 .8952 NG 128-76 */
+	   *o = (out_f32.exp==0)?0.0:*(float*)&out_f32;
+¡üssim-20201220 ¡Ä ±é»»¤Î¤ßspu.c¤ËÆþ¤ì´¹¤¨
+                    emax6lib.c:OP_FMA/FMS/FML/FAD
+                    softf8(f1.f, f2.f, f3.f, &f0.f); /* f1 + f2 * f3 -> f0 */
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.901300 *
+                   *o¤ò¥¹¥±¡¼¥ê¥ó¥°
+                    *o = *o * 1.18 ... 1/99ÅÓÃæ¤ÇÀÖ´ðÄ´¤Î²ø¤·¤¤¥Ñ¥¿¡¼¥ó¤Ë¤Ê¤Ã¤¿
+                    *o = *o * 1.15 ... 1/99ÅÓÃæ¤ÇÀÖ´ðÄ´¤Î²ø¤·¤¤¥Ñ¥¿¡¼¥ó¤Ë¤Ê¤Ã¤¿
+                    *o = *o * 1.10 ... ÆÃÄ§¥Ñ¥¿¡¼¥ó¤Ï½Ð¤ë   err=0.98
+                    *o = *o * 1.00 ... ÆÃÄ§¥Ñ¥¿¡¼¥ó¤¬¿¿¤Ã¹õ err=0.98
+----
+
+¡Úrsim ¡Ä brain¥·¥ß¥å¥ì¡¼¥¿¡Û                                        2019/11/01
+
+¡úrsim-20220720 ¡Ä FT¥Ñ¥Ã¥Áºï½ü(dmrp_stat¤òLMRING_BUSY¤ËÄÉ²Ã)emax6lib.cÊÑ¹¹
+¡úrsim-20220301 ¡Ä reg_ctrl¤«¤éEMAX_DEPTH¤ò¼èÆÀ
+¡úrsim-20220220 ¡Ä follow ssim
+¡úrsim-20220120 ¡Ä follow ssim
+¡úrsim-20211210 ¡Ä follow ssim
+¡ürsim-20210920 ¡Ä follow ssim
+¡ürsim-20210801 ¡Ä follow ssim
+¡ürsim-20210701 ¡Ä follow ssim
+¡ürsim-20210620 ¡Ä follow ssim
+¡ürsim-20210607 ¡Ä follow ssim
+¡ürsim-20210606 ¡Ä follow ssim
+¡ürsim-20210604 ¡Ä follow ssim
+¡ürsim-20210315 ¡Ä follow ssim
+¡ürsim-20210314 ¡Ä follow ssim
+¡ürsim-20210312 ¡Ä follow ssim
+¡ürsim-20210307 ¡Ä PBL1-4:NCHIP/IMAP/OMAP=2/2/16 PBL1-5:NCHIP/IMAP/OMAP=2/2/16¤Ï¡ß
+                   PBL1-4:NCHIP/IMAP/OMAP=2/4/8  PBL1-5:NCHIP/IMAP/OMAP=2/4/8
+   - rsim/rsim-zynq.dma -t -I1     -C4 -F1   : 01 err=0.7570
+¡ürsim-20210306 ¡Ä PBL1-4:IMAP/OMAP=2/16 PBL1-5:IMAP/OMAP=2/16
+                   IMXlen*K¤¬32K/4°Ê²¼¤Ê¤é¤Þ¤È¤á¤Æpload
+¡ürsim-20210305 ¡Ä -o¥ª¥×¥·¥ç¥ó¤¬errºÇÄã»þ¤Î½Å¤ß¤ò¥Õ¥¡¥¤¥ë½ÐÎÏ¤¹¤ë¤è¤¦ÊÑ¹¹
+                   imax.c¤Çfor(ic/oc) IC/OC¥Á¥§¥Ã¥¯ÄÉ²Ã
+		   Uint cc0[][] -> Ull cc0[][]¤Ë½¤Àµ.IMAP=4,OMAP=8¤âÀµ¾ï
+¡ürsim-20210302 ¡Ä conv-c2c-20210302¤Ç¤âPBL1-5:IMAP=4,OMAP=8¤ÏÌµÍý
+  PBL1-4:2+8 1-5:2+8(arch29) rsim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.7589
+  PBL1-4:4+8 1-5:2+8(arch28) rsim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.9000
+  PBL1-4:2+8 1-5:4+8(arch28) rsim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.9000
+  PBL1-4:4+8 1-5:4+8(arch28) rsim-zynq.emax6+dma -I1 -C4 -F1:iter=01 err=0.9000
+¡ürsim-20210301 ¡Ä AXI<->LMMÃ±°Ì¤ò64bit¤«¤é32bit¤ËÊÑ¹¹ mop(len=4B¤ÎÇÜ¿ô)
+¡ürsim-20210224 ¡Ä i,o->o,i
+¡ürsim-20210223 ¡Ä ic0[ic][oc],kp[ic][oc]->ic0[oc][ic],kp[oc][ic]
+¡ürsim-20210222 ¡Ä test020¤¬PBL1-5:IMAP=4,OMAP=8¤ÇÆ°¤¤¤¿¤Î¤ÇÈ¿±Ç.¤¿¤À¤·rsim¤Ï¼ýÂ«¤·¤Ê¤¤
+                   140MHz->100MHz¤ËÍî¤·¤Æ¤âÆ±¤¸
+¡ürsim-20201207 ¡Ä PBL1-5¤â,IMAP=2,OMAP=8¤ÇÆ°¤¤¤¿.
+                  - rsim/rsim-cent -t -I1     -C4 -F1: miniter=95 minerr=0.2772
+                  - rsim/rsim-cent -t -I1 -V2 -C6 -F2: miniter=85 minerr=0.2990
+                  - rsim/rsim-cent.emax6nc    -C4 -F1: miniter=73 minerr=0.2595
+                  - rsim-zynq.emax6+dma   -I1 -C4 -F1: miniter=99 minerr=0.2791
+                    epoch  1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.753500 *
+                    CONV_BACKWARD_CNMUL1 : 1562.080sec(68.27%)
+                    epoch  2/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.708300 *
+                    epoch  3/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.630800 *
+                    epoch  4/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.592000 *
+                    epoch 98/99: cnn_eta=0.005120 fc_eta=0.010240 err=0.279200 *
+                    epoch 99/99: cnn_eta=0.005120 fc_eta=0.010240 err=0.279100 *
+¡ürsim-20201206 ¡Ä PBL1-4¤Ï,core1()¤òÆþ¤ì´¹¤¨¤ë¤È,IMAX=2,OMAP=8¤ÇÆ°¤¤¤¿.
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.753500 *
+                    CONV_BACKWARD_CNMUL1 : 1724.940sec(70.41%)
+¡ürsim-20201205 ¡Ä ich¤ÎÂ¿ÃÊ²½ÅÓÃæ(¤Þ¤ÀIMAP=1¤Ç¤·¤«Æ°¤«¤Ê¤¤)
+¡ürsim-20201204 ¡Ä PBL1-4OMAP=16 PBL1-5OMAP=16 rsim.emax6+dma -t -I0 -C1 -F1 (arch28)
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.076600 *
+                    CONV_BACKWARD_CNMUL1:   94.900sec(40.47%)
+                 - PBL1-4OMAP=8  PBL1-5OMAP=16 rsim.emax6+dma -t -I0 -C1 -F1 (arch28)
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.070400 *
+                    CONV_BACKWARD_CNMUL1:  122.000sec(47.07%)
+                 ¡úPBL1-4OMAP=8  PBL1-5OMAP= 8 rsim.emax6+dma -t -I0 -C1 -F1 (arch28)
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.069900 *
+                    CONV_BACKWARD_CNMUL1:  159.160sec(53.70.07%)
+                 ¡úPBL1-4OMAP=8  PBL1-5OMAP= 8 rsim.emax6+dma -t -I1 -C4 -F1 (arch29)
+                    epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.752300 *
+                    CONV_BACKWARD_CNMUL1: 1980.240sec(72.75%)
+¡ürsim-20201203 ¡Ä PBL1-4¤ÏOMAP=8,1-5¤ÏOMAP=1¤Ç¼ÂÁõ(MNIST¤ÎOC=6¤¬¹õ¤Ë¤Ê¤ë¤¬³Ø½¬¤ÏÀµ¾ï)
+                   mop(top=0)¤Î¾ì¹ç¤ËDMA¤òÍÞ»ß.emax6lib.c¤âÊÑ¹¹
+                 - rsim-cent        ¤Ïerr=0.7558
+                 - rsim-cent.emax6nc¤Ïerr=0.8995
+                 - rsim-bsd.emax6nc ¤Ïerr=0.7551
+¡ürsim-20201202 ¡Ä PBL1-4¤òOMAP=4¤Ç¼ÂÁõ(OMAP=8¤Ç¤Ï°Û¾ï¤¬¤ß¤é¤ì¤ë)
+                   rsim.emax6+dma -t -I1 -C4 -F1 (arch28)
+	           epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.755900 *
+                     CONV_BACKWARD_CNMUL1 : 7181.230sec(90.72%)
+¡ürsim-20201201 ¡Ä PBL1-4¤È1-5¤Î¹âÂ®²½´°Î».PBL1_4_VERSION1,PBL1_5_VERSION1
+                   MNIST+CIFAR10(arch28)epoch 1/99¤Þ¤Ç³ÎÇ§
+           MNIST   epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.0698 *
+           CIFAR10 epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.7635 *
+¡ürsim-20201120 ¡Ä DP¤òÍøÍÑ¤·¤¿unaligned-load½éÈÇemax6lib¤ÇºÆ¥³¥ó¥Ñ¥¤¥ë
+                   conv-c2c-20201120, step4000-ZCU102-20201120 WNS=-2.2 (130MHz) (arch28)
+                   epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.753400 *
+¡ürsim-20201103 ¡Ä WSWAPºï½üÈÇ rsim.emax6+dma -t -I1 -C4 -F1
+                   conv-c2c-20201102, step4000-ZCU102-20201103 WNS=-1.9 (140MHz) (arch28)
+                   epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.759000 *
+                   conv-c2c-20201102, step4000-ZCU102-20201103 WNS=-2.2 (130MHz) (arch28)
+                   epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.753400 *
+                   epoch 2/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.719100 *
+                   epoch 3/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.628100 *
+                   epoch 4/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.561600 *
+                   epoch 5/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.541900 *
+                   epoch 6/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.526000 *
+                   conv-c2c-20201102, step4000-ZCU102-20201103 WNS=-2.2 (140MHz) (arch29)
+	           epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.759100 *
+                   epoch 2/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.721700 *
+                   epoch 3/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.635400 *
+                   epoch 4/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.576900 *
+                   epoch 5/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.543200 *
+¡ürsim-20201102 ¡Ä conv-c2c-20201102/emax6.h,emax6lib.c¤òÈ¿±Ç
+¡ürsim-20201101 ¡Ä spu.c¤òproj-arm64/fpga/step4000-ZCU102/¤Ë°ÜÆ°.smax,nmaxºï½ü
+¡ürsim-20201020 ¡Ä step4000-ZCU102-20201020 LMM_SIZE_IS_64KÍÑ
+  sgemm00(): ka=1296,1296*RMGRP*4=26KB(<32KB)¤Ê¤Î¤ÇRMGRP=5¤ÇÅý°ìOK
+¡ürsim-20201001 ¡Ä emax6lib.c½¤Àµ. emax6_kick_dma()ÀèÆ¬´ñ¿ô/Ä¹¤µ2¤Î¾ì¹çseg-fault
+  ¡ústep4000-ZCU102-20201010 ¡Ä »°Àº¥·¥¹¥Æ¥à8lane¹âÂ®ÈÇ»ÈÍÑ
+  rsim/rsim-zynq.emax6+dma -x -t -I1 -C4 -F1
+  params: WD/HT=320/320 TRAINING_MODE CIFAR10 CNN(original)MODE CNN_DEPTH=4 FC_DEPTH=1
+  model:  conv{32 3 5 28 11 2} conv{14 11 3 14 16 2} conv{7 16 2 7 32 1} conv{7 32 2 6 32 2} fc{10}
+  membase: 14a79000
+  i_inp : 14a79000-14bf4aff
+  i_ker : 14bf4b00-14bf8aff
+  i_out : 14bf8b00-14f8f6ff
+  i_m0A : 14a79000-14ae97ff
+  i_m0B : 14ae9800-14af4bff
+  i_m0C : 14af4c00-14af604f
+   num_image=50000 width=32 height=32 nlabel=50000
+   finish loading 50000x3072 matrix from ../image-data/cifar-train-image, shuffle=1
+   num_image=10000 width=32 height=32 nlabel=10000
+   finish loading 10000x3072 matrix from ../image-data/cifar-test-image, shuffle=0
+  epoch 1/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.753900 *
+   TRAINING               : 23657.840sec(99.73%)
+   TESTING                :  56.430sec(0.24%)
+    NN_FORWARD            : 614.060sec(2.59%)
+     CONV_FORWARD         : 522.520sec(2.20%)
+     CONV_FORWARD_UNPACK  :   0.000sec(0.00%)
+     CONV_FORWARD_CNMUL   : 522.480sec(2.20%)
+     CONV_FORWARD_RESHAPE :   0.000sec(0.00%)
+    NN_FORWARD_RELU       :  25.460sec(0.11%)
+    NN_FORWARD_POOLING    :  23.380sec(0.10%)
+    NN_FORWARD_FCMUL      :  15.550sec(0.07%)
+    NN_FORWARD_SOFTMAX    :   0.120sec(0.00%)
+    NN_BACKWARD           : 23086.710sec(97.32%)
+    NN_BACKWARD_FCMUL1    :   4.110sec(0.02%)
+    NN_BACKWARD_FCMUL2    :   3.660sec(0.02%)
+    NN_BACKWARD_UNPOOLING :  51.660sec(0.22%)
+    NN_BACKWARD_RELU      :  27.820sec(0.12%)
+     CONV_BACKWARD        : 22992.160sec(96.92%)
+     CONV_BACKWARD_UNPACK :   0.000sec(0.00%)
+     CONV_BACKWARD_RESHAPE:   0.000sec(0.00%)
+     CONV_BACKWARD_CNMUL1 : 22992.150sec(96.92%)
+     CONV_BACKWARD_CNMUL2 :   0.000sec(0.00%)
+     CONV_BACKWARD_PACK   :   0.000sec(0.00%)
+  epoch 2/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.711800 *
+  epoch 3/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.622600 *
+  epoch 4/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.576900 *
+  epoch 5/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.534900 *
+  epoch 6/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.515000 *
+  epoch 7/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.494300 *
+  epoch 8/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.475600 *
+  epoch 9/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.445800 *
+  epoch 10/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.433300 *
+  epoch 11/99: cnn_eta=0.080000 fc_eta=0.160000 err=0.427200 *
+¡ürsim-20200920 ¡Ä rsim/rsim-zynq.emax6+dma -x -t -I0 -C1 -F1 ¤Î¾ì¹ç
+                   sgemm00(): ka=1296,1296*RMGRP*4=26KB(>16KB)¤È¤Ê¤êLMM¤ËÆþ¤é¤Ê¤¤
+                   m=100¤ò³ä¤êÀÚ¤ì¤ëÃÍ¤È¤·¤Æ,RMGRP=5¤«¤é2¤ØÊÑ¹¹
+¡ürsim-20200919 ¡Ä imax.c¤Ë¹ç¤ï¤»¤Æsmax.c,nmax.c¤ò¹¹¿·.spu.c¹¹¿·
+¡ürsim-20200901 ¡Ä PBL1-4,1-5 IMAX´Ê°×ÈÇ´°À®.¹âÂ®²½¤Ïº£¸å¤Î²ÝÂê
+  CNN=0.08 FC=0.16 rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=01 err=0.7539
+                                                             iter=02 err=0.7118
+                                                             iter=03 err=0.6226
+  CNN=0.10 FC=0.24 rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=01 err=0.8999
+  CNN=0.08 FC=0.16 rsim-cent.emax6nc -t -I1 -C4 -F1 (cad110) iter=93 err=0.2731
+  CNN=0.08 FC=0.16 rsim-cent         -t -I1 -C4 -F1 (cad110) iter=95 err=0.2772
+  CNN=0.08 FC=0.16 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=64 err=0.2671
+  CNN=0.08 FC=0.16 rsim-bsd          -t -I1 -C4 -F1 (arfs00) iter=78 err=0.2703
+  CNN=0.08 FC=0.16 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arch00) iter=04 err=0.5610
+  CNN=0.08 FC=0.16 rsim-bsd          -t -I1 -C4 -F1 (arch00) iter=04 err=0.5484
+ TRAINING               : 5924.094sec(99.02%)
+ TESTING                :  32.711sec(0.55%)
+  NN_FORWARD            : 367.852sec(6.15%)
+   CONV_FORWARD         : 360.609sec(6.03%)
+   CONV_FORWARD_UNPACK  :   0.000sec(0.00%)
+   CONV_FORWARD_CNMUL   : 360.594sec(6.03%)
+   CONV_FORWARD_RESHAPE :   0.000sec(0.00%)
+  NN_FORWARD_RELU       :   1.344sec(0.02%)
+  NN_FORWARD_POOLING    :   3.180sec(0.05%)
+  NN_FORWARD_FCMUL      :   0.820sec(0.01%)
+  NN_FORWARD_SOFTMAX    :   0.016sec(0.00%)
+  NN_BACKWARD           : 5587.531sec(93.39%)
+  NN_BACKWARD_FCMUL1    :   0.000sec(0.00%)
+  NN_BACKWARD_FCMUL2    :   0.008sec(0.00%)
+  NN_BACKWARD_UNPOOLING :   6.180sec(0.10%)
+  NN_BACKWARD_RELU      :   1.719sec(0.03%)
+   CONV_BACKWARD        : 5578.664sec(93.24%)
+   CONV_BACKWARD_UNPACK :   0.000sec(0.00%)
+   CONV_BACKWARD_RESHAPE:   0.000sec(0.00%)
+   CONV_BACKWARD_CNMUL1 : 5578.648sec(93.24%)
+   CONV_BACKWARD_CNMUL2 :   0.000sec(0.00%)
+   CONV_BACKWARD_PACK   :   0.000sec(0.00%)
+¡ürsim-20200830 ¡Ä imax_conv_backward¤ÎPAD½¤Àµ,PBL1-4,1-5¥×¥í¥È¥¿¥¤¥Ô¥ó¥°
+¡ürsim-20200803 ¡Ä PBL1-5 oc-loop¤ò³°¤Ø.OSËè¤ËETA¤òÈùÄ´À°.
+                       epoch  1/99: cnn_eta=0.100000 fc_eta=0.160000 err=0.7523
+                       epoch  2/99: cnn_eta=0.100000 fc_eta=0.160000 err=0.7080
+                       epoch 23/99: cnn_eta=0.032768 fc_eta=0.052429 err=0.3908
+                       epoch 25/99: cnn_eta=0.026214 fc_eta=0.041943 err=0.3829
+  FC_ETA_INI=0.160 rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=59 err=0.3481
+  FC_ETA_INI=0.240 rsim-cent.emax6nc -t -I1 -C4 -F1 -V2      iter=52 err=0.4205
+  FC_ETA_INI=0.240 rsim-cent.emax6nc -t -I1 -C4 -F1 (cad112) iter=50 err=0.3338
+  FC_ETA_INI=0.240 rsim-cent         -t -I1 -C4 -F1 (cad111) Èó¼ýÂ« ETA=0.08:OK
+  FC_ETA_INI=0.160 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=91 err=0.3143
+  FC_ETA_INI=0.160 rsim-bsd          -t -I1 -C4 -F1 (arfs00) iter=78 err=0.2703
+  FC_ETA_INI=0.160 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arch00) iter=01 err=0.7532
+  FC_ETA_INI=0.160 rsim-bsd          -t -I1 -C4 -F1 (arch00) iter=01 err=0.7556
+¡ürsim-20200802 ¡Ä CNN_ETA_MAX 0.100f, CNN_ETA_MIN 0.006f
+  FC_ETA_INI=0.160 rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=13 err=0.4615
+  FC_ETA_INI=0.240 rsim-cent.emax6nc -t -I1 -C4 -F1 -V2      iter=52 err=0.4205
+  FC_ETA_INI=0.240 rsim-cent.emax6nc -t -I1 -C4 -F1 (cad111) iter=50 err=0.3338
+  FC_ETA_INI=0.240 rsim-cent         -t -I1 -C4 -F1 (cad111) Èó¼ýÂ« ETA=0.08:OK
+  FC_ETA_INI=0.160 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=79 err=0.3055
+  FC_ETA_INI=0.160 rsim-bsd          -t -I1 -C4 -F1 (arfs00) iter=52 err=0.2671
+  FC_ETA_INI=0.160 rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arch00) iter=66 err=0.3207
+¡ürsim-20200801 ¡Ä PBL-1.4¤Îorig()¤«¤étmp_col,tmp_dstºï½ü.
+                   CNN_ETA_MAX 0.080f, CNN_ETA_MIN 0.005f
+          Ä¾ÀÜ²Ã»» rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=01 err=0.9023
+          Ä¾ÀÜ²Ã»» rsim-cent.emax6nc -t -I1 -C4 -F1 -V2 (cad111) =02 err=0.6520
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad111) Èó¼ýÂ«
+                   rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=95 err=0.3211
+          Ä¾ÀÜ²Ã»» rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=91 err=0.3143
+          Ä¾ÀÜ²Ã»» rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arch00) iter=01 err=0.7589
+¡ürsim-20200730 ¡Ä PBL-1.4¤Îorig()OK. ETA¤Î¾ò·ïÊÑ¹¹(CentOS¤âZYNQ¤ÈÆ±¤¸°·¤¤)
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=09 err=0.5526
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad112) iter=95 err=0.3379
+                   rsim-cent         -t -I1 -C4 -F1 (cad110) iter=61 err=0.2722
+                   rsim-bsd.emax6nc  -t -I1 -C4 -F1 (arfs00) iter=95 err=0.3211
+                   rsim-bsd          -t -I1 -C4 -F1 (arfs00) iter=78 err=0.2703
+                   rsim-bsd          -t -I1 -C4 -F1 (arch00) iter=78 err=0.2778
+¡ürsim-20200720 ¡Ä smax1nc nmax1nc ½¾Íè·×»»¤ÎÀ°·Á¤Î¤ß.Àµ¾ïÆ°ºî³ÎÇ§.spu.cÄÉ²Ã
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad112) iter=96 err=0.2725
+¡ürsim-20200716 ¡Ä rsim-bsd¤¬NG.#if defined(ARMZYNQ) FC_ETA_MAX 0.320f FC_ETA_MIN 0.020f
+                                #else                FC_ETA_MAX 0.160f FC_ETA_MIN 0.010f
+¡ürsim-20200710 ¡Ä smax.c nmax.c initial templates
+¡ürsim-20200703 ¡Ä imax_sgemm00()N(12)¤În(10)À©¸Â´°À®(i_m0C¤Î½Ì¾®ºÑ)
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=23 err=0.3605
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad109) iter=81 err=0.2727
+¡ürsim-20200702 ¡Ä imax_sgemm00()N(12)¤În(10)À©¸Â(CEXE+CST)¤òÆ³Æþ(conv-c2c½¤Àµ)
+                   i_m0C¤Î½Ì¾®¤ÏÌ¤ÂÐ±þ
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=11 err=0.4475
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad109) iter=81 err=0.2727
+¡ürsim-20200701 ¡Ä imax_sgemm00()»ÃÄê
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=21 err=0.3713
+                   rsim-cent.emax6nc -t -I1 -C4 -F1 (cad110) iter=81 err=0.2727
+                   rsim/rsim     -t -I1 -V3 -C3 -F1 (cad111) iter=44 err=0.3119
+                   rsim/rsim     -t -I1 -V3 -C4 -F1 (cad109) iter=57 err=0.3101
+                   rsim/rsim     -t -I1 -V3 -C5 -F1 (cad112) iter=63 err=0.2962
+                   rsim/rsim     -t -I1 -V3 -C6 -F1 (cad112) iter=56 err=0.3147
+                   rsim/rsim     -t -I1 -V2 -C3 -F1 (cad111) NG
+                   rsim/rsim     -t -I1 -V2 -C4 -F1 (cad109) iter=66 err=0.3078
+                   rsim/rsim     -t -I1 -V2 -C5 -F1 (cad112) iter=58 err=0.2920
+                   rsim/rsim     -t -I1 -V2 -C6 -F1 (cad112) NG
+                   rsim/rsim     -t -I1 -V2 -C6 -F2 (cad112) iter=65 err=0.2991
+                   ¾è»»¸íº¹¡©fc_eta¤òcnn_eta¤Î£´ÇÜ¤ËÁý²Ã     OK
+                   ¾è»»¸íº¹¡©fc_eta¤òcnn_eta¤ÈÆ±¤¸¤Ëºï¸º     NG
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) NG 0.90
+                   rsim.emax6+dma    IMAX+i_m0C½ñÌá¤·Ìµ      OK
+¡ürsim-20200630 ¡Ä imax.c¤Ë,imax_conv_bbackward(),imax_sgemm()¤ò½¸Ìó
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) OK
+¡ürsim-20200625 ¡Ä eta/wd¸«Ä¾¤·
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=66 err=0.2772
+                   rsim/rsim.emax6nc -t -I1 -C4 -F1 (cad111) iter=91 err=0.2729
+                   rsim/rsim         -t -I1 -C4 -F1 (cad111) iter=95 err=0.2772
+¡ürsim-20200613 ¡Ä 2x2¤ÎIMAX2½Å¥ë¡¼¥×¤Ëimg¤òÊÔÆþ.in/outÏ¢Â³¥¢¥É¥ì¥¹²½
+                   rsim.emax6+dma    -t -I0 -C1 -F1 (arch29) iter=98 err=0.0127
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (arch28) iter=79 err=0.2741
+                   rsim/rsim.emax6nc -t -I1 -C4 -F1 (cad110) iter=99 err=0.2767
+¡ürsim-20200611 ¡Ä 2x2¤ÎIMAX2½Å¥ë¡¼¥×¤ËimgÊÔÆþ.emax6ncÀµ¾ï.¤¿¤À¤·out¤ÎÏ¢Â³²½Í×
+¡ürsim-20200610 ¡Ä imax_cpyin()¤ËorderÄÉ²Ã(batch,oc / oc,batchÀÚÂØ¤¨)
+                   rsim/rsim.emax6nc -t -I1 -C4 -F1 (centos) iter=80 err=0.2724
+¡ürsim-20200608 ¡Ä 2x2¤Î¥ë¡¼¥×¸ò´¹(burst_execÄ¹³ÎÊÝ¤Î¤¿¤á,rofs¤ò³°¤Ë,img¤òÃæ¤Ë
+                   rsim/rsim.emax6nc -t -I1 -C4 -F1 (centos) iter=80 err=0.2724
+¡ürsim-20200601 ¡Ä mop(force)¤ËÊÑ¿ô¤ò»ØÄê(conv-c2c-20200601¤«¤é²ÄÇ½)
+                   rsim.emax6+dma    -t -I1 -C4 -F1 (zcu102) iter=94 err=0.2842
+¡ürsim-20200531 ¡Ä IMAX¤ÇÀµ¾ï(force=1¸ÇÄê¤Î»ÃÄêÈÇ)
+                   rsim.emax6+dma    -t -I0 -C1 -F1 (zcu102) iter=98 err=0.0127
+¡ürsim-20200525 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ(OC¤¬4¤ÎÇÜ¿ô¤Ç¤Ê¤¤¾ì¹ç¤ËÂÐ±þ)
+¡ürsim-20200516 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ(imax_conv_forward´°À®)
+                   rsim/rsim.emax6nc -t -Ii -C4 -F1 (centos) iter=98 err=0.2720
+                   rsim/rsim         -t -Ii -C4 -F1 (centos) iter=93 err=0.2737
+¡ürsim-20200420 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ
+                   rsim/rsim.emax6nc -t -Ii -C4 -F1 (centos) iter=67 err=0.2661
+                   rsim/rsim         -t -Ii -C4 -F1 (centos) iter=82 err=0.2680
+                   rsim/rsim.emax6nc -t -Ii -C4 -F1 (zcu102) iter=42 err=0.2725
+                   rsim/rsim         -t -Ii -C4 -F1 (zcu102) iter=52 err=0.2675
+¡ürsim-20200418 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ
+                   rsim/rsim.emax6nc -t -Ii -C4 -F1 (centos) iter=95 err=0.2767
+¡ürsim-20200414 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ Dll¤òlong double¤«¤éUll[2]¤ËÊÑ¹¹
+¡ürsim-20200409 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ imax_conv_forward()¤Îreference¤òIMAX¸þ¤±²þÎÉ
+¡ürsim-20200408 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ imax_conv_forward()¤¬µ¿»÷¥³¡¼¥É¤ÇÆ°ºî
+                   rsim/rsim         -t -Ii -C4 -F1 (centos) iter=93 err=0.2737
+                   zcu102¤Î¾ì¹ç¡¤gcc -O2¤¬fmadd¤òÀ¸À®¤·¼ýÂ«¤·¤Ê¤¤. gcc -O1¤Ï¼ýÂ«
+¡ürsim-20200407 ¡Ä IMAX¤ÈÀÜÂ³½àÈ÷Ãæ imax_conv_forward()¤¬µ¿»÷¥³¡¼¥É¤ÇÆ°ºî
+                   rsim/rsim -t -I0 -x Àµ¾ï¤Ë³Ø½¬/Ç§¼±
+¡ürsim-20200211 ¡Ä UPDATE_WD1/2/3¤Ë¤Æ½ù¡¹¤ËÈùÄ´À°
+                   rsim/rsim -t -I1 -C4 -F1         (centos) iter=82 err=0.2680
+                   rsim/rsim -t -I1 -V2 -C4 -F1     (centos) iter=81 err=0.3047
+¡ürsim-20200210 ¡Ä CIFAR¤Ç¤Ï,ÆþÎÏ²èÁü¤òflip¤·¤¿¤â¤Î¤â³Ø½¬¤Ë»ÈÍÑ
+                   rsim/rsim -t -I1 -C4 -F1         (centos) iter=85 err=0.2880
+                   rsim/rsim -t -I1 -V2 -C4 -F1     (centos) iter=95 err=0.3160
+¡ürsim-20200118 ¡Ä eta¤òÆ°ÅªÄ´À°(err¤¬Áý²Ã¤·¤¿¾ì¹ç¤Ë0.8¤ò¾è¤¸¤ë.eta<0.01¤Ç¸µ¤ËÌá¤¹)
+¡ürsim-20200117 ¡Ä FCÁØ¤ò¥Þ¥ë¥Á²½´°Î» rsim/rsim -x -t -I0 -V3 -C1 -F2  (round 20/80: test-err=0.040400)
+                                      rsim/rsim -x -t -I0 -V3 -C1 -F2 ¤ÏÀºÅÙ¤¬°­¤¤
+¡ürsim-20200116 ¡Ä FCÁØ¤ò¥Þ¥ë¥Á²½ÅÓÃæ
+¡ürsim-20200115 ¡Ä CIFAR10¤ò"32x32&color"¤Î¤Þ¤ÞÆþÎÏ²ÄÇ½,MNIST¤ÈCIFAR10¤Î¥â¥Ç¥ë¤òÊ¬Î¥
+¡ürsim-20200114 ¡Ä extract_slit()¤Ë²Ã¤¨¡¤Ipl2F4h()¤Ë¤ª¤¤¤Æchannel[8]¤Ë¸µ²èÁü¤òÄÉ²Ã¤·¤ÆÀºÅÙ¸þ¾å
+¡ürsim-20200113 ¡Ä -S<num> SLIT_TYPE»ØÄêµ¡Ç½ÄÉ²Ã (MNIST¤Ï-S3 CIFAR¤Ï-S2¤¬¹âÇ§¼±Î¨)
+¡ürsim-20200112 ¡Ä copy_H_to_RGB()ÄÉ²Ã.ºÇ½ª±£¤ìÁØ¤âÉ½¼¨
+¡ürsim-20200111 ¡Ä enable_padÄÉ²Ã printf("(height - psize)/pstride + 1 == oheight || height == oheight\n");
+¡ürsim-20200110 ¡Ä iter=100¤ËÁý²Ã
+  ¡ÚÍ­Ë¾¤ÊÁÈ¤ß¹ç¤ï¤»¤Ë¹Ê¤Ã¤¿Ãµº÷¡Û                                         CIFAR10 cnn      eye  iter=40¤ÎÃÍ
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,32,1}                            *0.4351  *0.4905 ¡ú¡ú32-2-32-1
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,32,2}                            *0.4321  *0.5005 ¡ú¡ú32-2-32-2
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,32,2},{ 2,32,2, 1, 64,1}         *0.4383  *0.5095 ¡ú¡ú32-2-32-2-64-1
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,1}                            *0.4590  *0.5120 ¡ú¡ú32-2-64-1
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2}                            *0.4088  *0.5009 ¡ú¡ú32-2-64-2
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2},{ 2,64,2, 1,128,1}          0.8999  *0.5357 ¡ú  32-2-64-2-128
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,1}                             0.8999  *0.5096 ¡ú  64-2-64-1
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,2}                            *0.4148  *0.5099 ¡ú¡ú64-2-64-2
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,2},{ 2,64,2, 1,128,1}         *0.8999  *0.8999
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,128,1}                            0.9003   0.9003
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,128,2}                            0.9003   0.5120 ¡ú  64-2-128-2
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,256,1}                            0.9003   0.9003
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,256,2}                            0.9003   0.9003
+¡ürsim-20200102 ¡Ä -D CNN_DEPTH ¤òÄÉ²Ã
+  ¡Ú°Ê²¼¤Ïtrain=50000¤ò»ÈÍÑ¤·¤¿training¤Î¾ì¹ç¡Û                            CIFAR10 cnn      eye  iter=40¤ÎÃÍ
+  {28,1,5,24,8,1},{24,8,3,22,24,1}                                               0.9001   0.6192
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                                               0.9001  *0.6015
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                                               0.9001  *0.5803
+  {28,1,5,24,8,1},{24,8,3,22,32,1},{22,32,3,20,64,1}                             0.9001   0.8995
+  {28,1,5,24,8,1},{24,8,3,22,32,1},{22,32,3,20,64,1},{20,64,3,18,128,1}          0.9001   0.9001
+  {28,1,5,24,8,1},{24,8,3,22,32,1},{22,32,3,20,64,2}                             0.8996   0.8996
+  {28,1,5,24,8,1},{24,8,3,22,32,1},{22,32,3,20,64,2}                             0.8996   0.8996
+  {28,1,5,24,8,1},{24,8,3,22,16,1},{22,16,3,20,32,2},{10,32,3, 8, 64,1},{8,64,3,6,128,1},{6,128,3,4,128,2},{2,128,1,2,128,1},{2,128,1,2,128,1},{2,128,1,2,128,2}
+                                                                                 0 9000   0 9000
+  {28,1,5,24,8,1},{24,8,3,22,64,1},{22,64,3,20,64,2},{10,64,3, 8,256,1},{8,256,3,6,256,2}
+                                                                                 0 8999   0 8999
+  {28,1,5,24,8,1},{24,8,3,22,32,2}                                              *0.4745  *0.5576 ¡ú32
+  {28,1,5,24,8,1},{24,8,3,22,64,2}                                              *0.4578  *0.5820 ¡ú64
+  {28,1,5,24,8,1},{24,8,3,22,32,2},{11,32,3, 9,64,1},{ 9,64,3, 7,128,2}          0.9000   0.9000
+  {28,1,5,24,8,2},{12,8,3,10,32,1}                                              *0.4713  *0.5437 ¡ú32
+  {28,1,5,24,8,2},{12,8,3,10,64,1}                                              *0.5307  *0.5686 ¡ú64
+  {28,1,5,24,8,2},{12,8,3,10,32,1},{10,32,2, 9,64,1},{ 9,64,2, 8,128,2}          0.8991   0.9002
+  {28,1,5,24,8,2},{12,8,3,10,32,1},{10,32,3, 8,64,2},{ 4,64,3, 2,128,1}          0.8991   0.8991
+  {28,1,5,24,8,2},{12,8,3,10,64,1},{10,32,2, 9,64,1},{ 9,64,2, 8,128,2}          0.8999   0.8999
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,1}                            *0.4590  *0.5120 ¡ú¡ú32-2-64-1
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,1}                             0.8998  *0.5096 ¡ú  64-2-64-1
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,128,1}                            0.8999   0.8999
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,3, 3,64,1}                            *0.4703   0.9000
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,3, 3,64,1},{ 3,64,3, 1,128,1}          0.9000   0.9000
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2}                            *0.4088  *0.5009 ¡ú¡ú32-2-64-2
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,3, 3,64,2}                             0.9002  *0.5869     32-3-64-2
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,2}                            *0.4148  *0.5099 ¡ú¡ú64-2-64-2
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,64,2},{ 2,64,2, 1,256,1}          0.9000   0.9000
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2},{ 2,64,2, 1,128,1}          0.8999  *0.5357     32-2-64-2-128
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,128,2}                            0.9002  *0.5120 ¡ú  64-2-128-2
+  {28,1,5,24,8,2},{12,8,3,10,64,2},{ 5,64,2, 4,256,2}                            0.8999   0.8999
+  {28,1,5,24,8,2},{12,8,3,10,128,2},{5,128,2,4,128,2}                            0.8999   0.8999
+  {28,1,5,24,8,2},{12,8,5, 8,64,2},{ 4,64,2, 2,128,2}                            0.5407   0.5120 ¡ú¡ú64-2-128-2
+
+  ¡Ú°Ê²¼¤Ïtrain+test=60000¤ò»ÈÍÑ¤·¤¿training¤Î¾ì¹ç¡Û    MNIST cnn     eye  CIFAR10 cnn      eye ¡ú¡ú¤¬default-model
+  {28,1,5,24,8,1}                                          *0.0169  0.0357       0.9000   0.5625 1bit-4SAD(TH=3)
+  {28,1,5,24,8,1}                                          *0.0170 *0.0358       0.9002  *0.4224 laplacian(TH=13)iter20
+  {28,1,5,24,8,1},{24,8,3,22,16,1}                         *0.0150 *0.0231       0.8999  *0.2809 laplacian(TH=13)iter20 0.2490(iter30) 0.2346(iter40) 0.2259(iter100)¡ú
+  {28,1,5,24,8,1},{24,8,3,22,20,1}                          0.9013 *0.0231       0.9002  *0.2459 laplacian(TH=13)iter20 0.2079(iter30) 0.1893(iter40) 0.1454(iter100)¡ú
+  {28,1,5,24,8,1},{24,8,3,22,24,1}                          0.9013 *0.0230       0.9001  *0.1945 laplacian(TH=13)iter20 0.1546(iter30) 0.1268(iter40) 0.0012(iter100)¡ú¡ú
+
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0272       0.9001   0.3170 1bit-4SAD(TH=3)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0248       0.9001   0.1681 laplacian(TH=10)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013 *0.0246       0.9001   0.1617 laplacian(TH=12)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013 *0.0250       0.9001  *0.1531 laplacian(TH=13)iter20 0.0982(iter30) 0.0269(iter40)¡ú
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0264       0.9001  *0.1456 laplacian(TH=14)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0251       0.9001   0.1575 laplacian(TH=16)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0255       0.9001   0.1718 laplacian(TH=20)
+  {28,1,5,24,8,1},{24,8,3,22,32,1}                          0.9013  0.0254       0.9001   0.2289 laplacian(TH=32)
+  {28,1,5,24,8,1},{24,8,3,22,32,1},{22,32,3,20,32,1}        0.9013  0.9013       0.9003   0.9001 laplacian(TH=13)
+
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0284       0.8999   0.2408 1bit-4SAD(TH=3)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0248       0.8999   0.0843 laplacian(TH=10)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0245       0.8999   0.0837 laplacian(TH=12)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013 *0.0243       0.8999  *0.0808 laplacian(TH=13)iter20 0.0110(iter30)¡ú
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0249       0.8999   0.1419 laplacian(TH=14)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0250       0.8999   0.0899 laplacian(TH=16)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0258       0.8999   0.0912 laplacian(TH=20)
+  {28,1,5,24,8,1},{24,8,3,22,64,1}                          0.9013  0.0277       0.8999   0.1321 laplacian(TH=32)
+  {28,1,5,24,8,1},{24,8,3,22,64,1},{22,64,3,20,64,1}        0.9013  0.9013       0.8995   0.9004 laplacian(TH=13)
+
+  {28,1,5,24,8,1},{24,8,3,22,128,1}                         0.9013  0.0229       0.9003   0.0702 laplacian(TH=13)iter20 0.0001(iter30)¡ú
+  {28,1,5,24,8,1},{24,8,3,22,32,2}                          0.0152  0.0203       0.3785   0.3644 laplacian(TH=13)iter20 0.3443(iter40)¡ú
+
+  {28,1,5,24,8,2}                                                     0.0176 0.0330 0.5010 0.6491 1bit-4SAD(TH=3)
+  {28,1,5,24,8,2}                                                     0.0176 0.0402 0.4951 0.5295 laplacian(TH=13)
+  {28,1,5,24,8,2},{12,8,3,10,32,1}                                    0.0130 0.0181 0.3892 0.3798 laplacian(TH=13)
+  {28,1,5,24,8,2},{12,8,3,10,64,1}                                    0.9013 0.0174 0.3695 0.2915 laplacian(TH=13)
+  {28,1,5,24,8,2},{12,8,3,10,32,2}                                    0.0128 0.0186 0.3505 0.4247 laplacian(TH=13)iter40
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2}                  0.0092 0.0188 0.3478 0.4083 laplacian(TH=13)iter40
+  {28,1,5,24,8,2},{12,8,3,10,32,2},{ 5,32,2, 4,64,2},{2,64,2,1,128,1} 0.9000 0.0165 0.9000 0.3246 laplacian(TH=13)iter40
+¡ürsim-20200101 ¡Ä Option-x, hist_flat() ÄÉ²Ã¡¥8b-edgeÍ­¸ú¤ÏCNN_DEPTH=2¤Þ¤Ç
+¡ürsim-20191231 ¡Ä cnnet.c:p[CNN_DEPTH]={{},{}}¤ËÅý¹ç
+¡ürsim-20191230 ¡Ä 5x5 - bias - relu - pool - 8x3x3 - bias - relu - pool - fc
+¡ürsim-20191221 ¡Ä 5x5 - bias - relu - pool - fc (pooling¤ò11x11¤«¤é12x12¤ËÊÑ¹¹)
+¡ürsim-20191220 ¡Ä nchannel=20;cifar10ÂÐ±þ¤ÈÀºÅÙ¸þ¾åÊýË¡Ãµº÷Ãæ(nchannel=20)
+¡ürsim-20191219 ¡Ä mnistºÇ½ªÈÇ
+¡ürsim-20191218 ¡Ä motion_xy/z¤ÎÈæ³Ó¤òslit´°Á´°ìÃ×¤«¤éÉôÊ¬°ìÃ×¤ËÊÑ¹¹
+---
+
+¡Úmplayer ¡Ä movie->RGB24ÊÑ´¹¡Û
+
+  FreeBSD7.2(32bit)   arch00
+  FreeBSD12.0(32bit)  arch09,10,11,12,13,14,15
+  CentOS7.7(64bit)    arch07 cad107 wonder47
+----
+
+¡Úcapture»È¤¤Êý¡Û
+
+¡ürsim/mplayer¤ÎÉ¸½àÆþÎÏ¸þ¤±¤Ëmcamera²èÁü¤òÀ¸À®¤¹¤ë
+  make -f Makefile-bktr all clean .. capture-bktr: FreeBSD+/dev/bktr01ÍÑ(arch09)
+  make -f Makefile-v4l2 all clean .. capture-v4l2: FreeBSD/CentOS+/dev/video0ÍÑ(arch07/arch09)
+----
+
+¡Ú¥³¥Þ¥ó¥ÉÎã¡Û
+### FreeBSD/CentOS
+### arch00,07,09,10-15/cad107,wonder47
+mplayer/mplayer   image-data/svideo1.mp4 >/dev/null
+mplayer/mplayer   image-data/svideo2.mp4 >/dev/null
+mplayer/mplayer   image-data/drive.mp4   >/dev/null
+mplayer/mplayer   image-data/small.avi   >/dev/null
+mplayer/mplayer   image-data/svideo1.mp4 | rsim/rsim -2 -w640 -h480 -x -r -I0 -V3 -C1 -F1
+mplayer/mplayer -<image-data/svideo2.mp4 | rsim/rsim -2 -w640 -h480 -x -r -I0 -V3 -C1 -F1
+mplayer/mplayer -<image-data/drive.mp4   | rsim/rsim -2 -w640 -h720 -x -r -I0 -V3 -C1 -F1
+
+### FreeBSD+/dev/bktr01 (stereo camera)
+### arch09,12,13
+ssh arch09 proj-arm64/sample/capture/capture-bktr | mplayer/mplayer - -demuxer rawvideo -rawvideo w=640:h=240:format=rgb24 | rsim/rsim -2 -w320 -h240 -x -r -I0 -V3 -C1 -F1
+
+### FreeBSD/CentOS+/dev/video0 (single camera)
+### arch09,10,11,14,15/cad107,wonder47
+ssh arch09 proj-arm64/sample/capture/capture-v4l2 | mplayer/mplayer - -demuxer rawvideo -rawvideo w=320:h=240:format=rgb24 | rsim/rsim -w320 -h240 -x -r -I0 -V3 -C1 -F1
+
+### FreeBSD/CentOS training MNIST
+rsim/rsim -t -I0
+
+### FreeBSD/CentOS VBGMM Image segmentation
+mplayer/mplayer image-data/small.avi   | ImageSegment/IS_VBGMM -w320 -h240 -x -c10 
+mplayer/mplayer image-data/small.avi   | ImageSegment/IS_VBGMM -w320 -h240 -x -c3 
+mplayer/mplayer image-data/small.avi   | ImageSegment/IS_VBGMM -w320 -h240 -x -c16 
+mplayer/mplayer image-data/svideo1.mp4 | ImageSegment/IS_VBGMM -w1280 -h480 -x -c10 -r 
+
+### cad101
+mplayer/mplayer image-data/Milan_crosswalk_small.mp4 | ImageSegment_VB_GPU/vbgmm -w640 -h360 -x -c5 -a3 -u -t0.5 
+mplayer/mplayer image-data/Milan_crosswalk.mp4       | ImageSegment_VB_GPU/vbgmm -w1280 -h720 -x -c5 -a3 -u -t0.5 
+---
+
+¡Úµìpsim ¡Ä NN¥·¥ß¥å¥ì¡¼¥¿¤ÈASICEDB6¡Û                               2019/10/01
+
+¡üpsim.c.20191001 ¡Ä nsim.c.20150814¤òASICEDB6ÍÑ¤Ë²þÂ¤
+----
+
+¡Úµìnsim ¡Ä NN¥·¥ß¥å¥ì¡¼¥¿¤ÈASICEDB4¡Û                               2015/7/22
+
+¡ünsim.c.20150814 ¡Ä ¥·¥Ê¥×¥¹¥â¥Ç¥ë¤òÌÚÂ¼¡¦µµÅÄÈÇ¤«¤é¥Þ¡¼¥¸
+¡ünsim.c.20150811 ¡Ä FILM¥¤¥ó¥¿¥Õ¥§¡¼¥¹¤ò160bit¤Ë³ÈÄ¥
+¡ünsim.c.20150730 ¡Ä ÆþÎÏ¥Ñ¥¿¡¼¥óÂÀ»ú¡ÊÆþÎÏ0,1,2,3,4¤ËÂÐ¤·¡¤0,1,4,4,4¤ÈÇ§¼±¡Ë
+¡ünsim.c.20150729 ¡Ä ¥¢¥ë¥´¥ê¥º¥à½¤Àµ¡ÊÆþÎÏ0,1,2,3,4¤ËÂÐ¤·¡¤0,2,3,3,4¤ÈÇ§¼±¡Ë
+¡ünsim.c.20150728 ¡Ä ÆþÎÏ¥Ñ¥¿¡¼¥ó¤â½Ì¾®
+¡ünsim.c.20150727 ¡Ä ½ÐÎÏ°ÌÃÖ¤ò2x5¤ËÊÑ·Á
+¡ünsim.c.20150726 ¡Ä NWIDTH¤òÈ¾Ê¬¤Ë½Ì¾®
+¡ünsim.c.20150725 ¡Ä ¿ô»ú¤òÊÑ¤¨¤ëÅÙ¤Ëneuron¤ò½é´ü²½
+¡ünsim.c.20150724 ¡Ä Ç§¼±»þ¤Ë¾ï¤Ë¡Ö£³¡×¤ÈÇ§¼±
+----
+
+¡ÚMISC¡Û
+  BayesianGMM_CUDA	À¾ËÜVBGMM/GPU(½¤ÏÀ)
+  BayesianGMM_HLS	À¾ËÜVBGMM/CPU(½¤ÏÀ)
+  ImageSegment          À¾ËÜVBGMM²èÁü¥»¥°¥á¥ó¥Æ¡¼¥·¥ç¥ó
+----
+
+¡ÚNCHIPÉ¾²ÁÂÐ¾Ý¥×¥í¥°¥é¥à¡Û
+
+¡¦filter+rmm.c
+¡¦mm_cnn_lf/{mm,cnn,gather,gdepth}+rmm.c
+----
+
+¡ÚcsimÂÐ±þ¥×¥í¥°¥é¥à°ìÍ÷¡Û      ¡û´°Áö¡¤¡üºî¶ÈÃæ
+
+              ¨£¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¨¨¡¨¨¨¡¨¤
+-DPTHREAD     ¨¢        ¨¢¡û      ¨¢        ¨­      ¨¢      ¨¢              ¨­              ¨¢¡û            ¨¢              ¨¢              ¨¢              ¨­      ¨¢  ¨¢  ¨¢
+-DARMSIML     ¨¢        ¨¢        ¨¢        ¨­      ¨¢      ¨¢              ¨­¡û            ¨¢¡û            ¨¢¡û            ¨¢¡û            ¨¢¡û            ¨­      ¨¢  ¨¢  ¨¢¢¨SIML+mmap(emax_start()->svc)
+-DARMZYNQ     ¨¢        ¨¢        ¨¢        ¨­      ¨¢      ¨¢              ¨­              ¨¢              ¨¢              ¨¢              ¨¢              ¨­¡û    ¨¢¡û¨¢¡û¨¢¢¨ZYNQ+mmap
+-DEMAX6       ¨¢        ¨¢        ¨¢¡û      ¨­      ¨¢      ¨¢              ¨­              ¨¢              ¨¢¡û            ¨¢¡û            ¨¢¡û            ¨­¡û    ¨¢¡û¨¢¡û¨¢conv://EMAX5A(emax6_start())
+              ¨¦¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨ª¨¡¨ª¨¡¨¥
+              ¨¢Intel   ¨¢.pth    ¨¢.emax6nc¨¢GPU   ¨¢MIC   ¨¢armv7         ¨¢armv8         ¨¢.pth(8)       ¨¢.emax6nc      ¨¢.emax6        ¨¢emax6+dma zynq.emax6nc¨¢zynq.emax6(asic)
+              ¨£¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¤        zynq.emax6+dma(asic)
+stan-Bubble   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ d8514(1356be)¨¢1164e2(12093d)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-FFT      ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 52a10( 58d99)¨¢  af4e( 17244)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Intmm    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 6f6fb( 74583)¨¢ 23bde( 3b114)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Mm       ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 922aa( b9964)¨¢ 2884a( 426bb)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Perm     ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ e1c56(1773da)¨¢136569(18faeb)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Puzzle   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢58f746(5a4229)¨¢4fc440(54c470)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Queens   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢  4514(  68e0)¨¢  40a7(  ba18)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Quick    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ b8543( c5e55)¨¢ c0f0d( e6cf2)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Towers   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢11c414(1c9ea4)¨¢10d037(1458c6)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+stan-Trees    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢11e471(198425)¨¢112884(315a04)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢L2miss(DDR3)¤ò50ns¤È²¾Äê
+4dimage/gdisp ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢EMAX :1.0GHz¤ò²¾Äê
+4dimage/gather¨¢gather  ¨¢.pth    ¨¢.emax6nc¨¢      ¨¢      ¨¢              ¨¢-arm          ¨¢-4core/8thread¨¢-arm.emax6nc  ¨¢-arm.emax6    ¨¢-arm.emax6.dma¨¢ARMv8:1.0GHz MMÃÙ±ä=L2DELAY=50
+   L2delay=50 ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=0d4ded56 ¨¢cycl=035dff0e ¨¢cycl=2c35a87f ¨¢cycl=0eca79b1 ¨¢cycl=00a7a426 ¨¢bsim¤Îcycle¿ô¤Î¤Á¤ç¤¦¤É1/2.5
+4dimage/gdepth¨¢gdepth  ¨¢.pth    ¨¢.emax6nc¨¢      ¨¢      ¨¢              ¨¢-arm          ¨¢-4core/8thread¨¢-arm.emax6nc  ¨¢-arm.emax6    ¨¢-arm.emax6.dma¨¢  ARM=1.0GHz,IMAX=1.0GHz¤È²ò¼á¤¹¤ì¤Ðbsim¤ÈÆ±Åù
+   L2delay=50 ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=6e9d9ac5 ¨¢cycl=1c1ca380 ¨¢cycl=9e25ff3d ¨¢cycl=1d52c0e8 ¨¢cycl=0155db7c ¨¢bsim¤Îcycle¿ô¤Î¤Á¤ç¤¦¤É1/2.16
+conv16        ¨¢¡û      ¨¢¡Ý      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=0243c580 ¨¢¡Ý            ¨¢cycl=0576a9c0 ¨¢cycl=00a242b1 ¨¢cycl=00780839 ¨¢
+filter        ¨¢¡û      ¨¢¡Ý      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡û            ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢¡û            ¨¢X<<24|Y<<16¤ËÂÐ¤·,-O3¤¬Èó¥¢¥é¥¤¥ó16byte-ldÌ¿Îá
+stencil-pipe  ¨¢¡û      ¨¢¡Ý      ¨¢Ì¤      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡û            ¨¢¡Ý            ¨¢Ì¤            ¨¢Ì¤            ¨¢Ì¤            ¨¢  -O2¤Ç¤ÏOK
+              ¨§¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨«¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨©
+              ¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¨¢¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢              ¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢LDDMQ_MUX=8   ¨¢LDDMQ_MUX=8   ¨¢
+tricount8     ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢cy=003dbdb1   ¨¢BK=8/16¤Ïhang ¨¢cy=004458b7   ¨¢cy=¢£¢£¢£Ì¤¼Â ¨¢cy=¢£¢£¢£Ì¤¼Â ¨¢MAXL2BK=8, 8ÃÊrun.small
+              ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢cy=893a328e6  ¨¢cy=33ab17506  ¨¢cy=8f2f654d7  ¨¢cy=¢£¢£¢£Ì¤¼Â ¨¢cy=¢£¢£¢£Ì¤¼Â ¨¢MAXL2BK=8, 8ÃÊrun
+dijkstra3     ¨¢¡û      ¨¢¡û      ¨¢¡Ý      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+Kdijkstra     ¨¢¡û      ¨¢¡û      ¨¢¡Ý      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢
+----          ¨¦¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¥
+
+¡ÚbsimÂÐ±þ¥×¥í¥°¥é¥à°ìÍ÷¡Û      ¡û´°Áö¡¤¡üºî¶ÈÃæ
+
+              ¨£¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨½¨¡¨¡¨¡¨¨¨¡¨¨¨¡¨¤
+-DPTHREAD     ¨¢        ¨¢¡û      ¨¢        ¨­      ¨¢      ¨¢              ¨­              ¨¢¡û            ¨¢              ¨¢              ¨¢              ¨­      ¨¢  ¨¢  ¨¢
+-DARMSIML     ¨¢        ¨¢        ¨¢        ¨­      ¨¢      ¨¢              ¨­¡û            ¨¢¡û            ¨¢¡û            ¨¢¡û            ¨¢              ¨­      ¨¢  ¨¢  ¨¢¢¨SIML+mmap(emax_start()->svc)
+-DARMZYNQ     ¨¢        ¨¢        ¨¢        ¨­      ¨¢      ¨¢              ¨­              ¨¢              ¨¢              ¨¢              ¨¢              ¨­¡û    ¨¢¡û¨¢  ¨¢¢¨ZYNQ+mmap
+-DEMAX5       ¨¢        ¨¢        ¨¢¡û      ¨­      ¨¢      ¨¢              ¨­              ¨¢              ¨¢¡û            ¨¢¡û            ¨¢              ¨­¡û    ¨¢¡û¨¢  ¨¢conv://EMAX5A(emax5_start())
+              ¨¦¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¿¨¡¨¡¨¡¨ª¨¡¨ª¨¡¨¥
+              ¨¢Intel   ¨¢.pth    ¨¢.emax5nc¨¢GPU   ¨¢MIC   ¨¢armv7         ¨¢armv8         ¨¢.pth(8)       ¨¢.emax5nc      ¨¢.emax5        ¨¢          zynq.emax6nc¨¢zynq.emax6(asic)
+              ¨£¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¨¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¤
+stan-Bubble   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ d8514(1356be)¨¢1164e2(11a6c1)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-FFT      ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 52a10( 58d99)¨¢  af4e(  ec71)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Intmm    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 6f6fb( 74583)¨¢ 23bde( 2cf7c)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Mm       ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ 922aa( b9964)¨¢ 2884a( 34639)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Perm     ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ e1c56(1773da)¨¢136569(1891f3)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Puzzle   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢58f746(5a4229)¨¢4fc440(50fe91)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Queens   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢  4514(  68e0)¨¢  40a7(  6328)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Quick    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢ b8543( c5e55)¨¢ c0f0d( d0a9a)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Towers   ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢11c414(1c9ea4)¨¢10d037(13efb4)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+stan-Trees    ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢11e471(198425)¨¢112884(1b9548)¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢L2miss(DDR3)¤ò80ns¤È²¾Äê
+4dimage/gdisp ¨¢¡û      ¨¢¡Ý      ¨¢¡Ý      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢EMAX :240MHz MMÃÙ±ä=L2DELAY/10=20
+4dimage/gather¨¢gather  ¨¢.pth    ¨¢.emax5nc¨¢      ¨¢      ¨¢              ¨¢-arm          ¨¢-2core/8thread¨¢-arm.emax5nc  ¨¢-arm.emax5    ¨¢              ¨¢ARMv8:2.4GHz MMÃÙ±ä=L2DELAY  =200
+   L2delay=200¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=21fbd6f5 ¨¢cycl=10c9dcb7 ¨¢cycl=3b23cec6 ¨¢cycl=01ad8060 ¨¢              ¨¢armv8¤Î20.3ÇÜÂ®
+4dimage/gdepth¨¢gdepth  ¨¢.pth    ¨¢.emax5nc¨¢      ¨¢      ¨¢              ¨¢-arm          ¨¢-2core/8thread¨¢-arm.emax5nc  ¨¢-arm.emax5    ¨¢              ¨¢
+   L2delay=200¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=7c58448f ¨¢cycl=49a74af3 ¨¢cycl=ac79be75 ¨¢cycl=02e0ff72 ¨¢              ¨¢armv8¤Î43.2ÇÜÂ®
+conv16        ¨¢¡û      ¨¢¡Ý      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢cycl=02408f32 ¨¢¡Ý            ¨¢cycl=057e8e90 ¨¢cycl=0036d3a3 ¨¢              ¨¢armv8¤Î10.0ÇÜÂ®
+filter        ¨¢¡û      ¨¢¡Ý      ¨¢¡û      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡û            ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢              ¨¢X<<24|Y<<16¤ËÂÐ¤·,-O3¤¬Èó¥¢¥é¥¤¥ó16byte-ldÌ¿Îá
+stencil-pipe  ¨¢¡û      ¨¢¡Ý      ¨¢Ì¤      ¨¢¡Ý    ¨¢¡Ý    ¨¢¡Ý            ¨¢¡û            ¨¢¡Ý            ¨¢Ì¤            ¨¢Ì¤            ¨¢              ¨¢  -O2¤Ç¤ÏOK
+              ¨§¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨«¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨«¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨©
+              ¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¨¢¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢¡¡¡¡¡¡¡¡¡¡¡¡¡¡¨¢LDDMQ_MUX=8   ¨¢              ¨¢
+tricount8     ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢cy=002ed584   ¨¢¡û            ¨¢cy=0034e7f5   ¨¢cy=006c34d6   ¨¢              ¨¢MAXL2BK=64,  8ÃÊrun.small
+              ¨¢¡û      ¨¢¡û      ¨¢¡û      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢cy=8_93a319cb ¨¢cy=3_37d0f00c ¨¢cy=8_f73f2765 ¨¢cy=3_93c54b01 ¨¢              ¨¢MAXL2BK=8,   8ÃÊrun
+dijkstra3     ¨¢¡û      ¨¢¡û      ¨¢¡Ý      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+Kdijkstra     ¨¢¡û      ¨¢¡û      ¨¢¡Ý      ¨¢¡û    ¨¢¡û    ¨¢¡Ý            ¨¢¡û            ¨¢¡û            ¨¢¡Ý            ¨¢¡Ý            ¨¢              ¨¢
+----          ¨¦¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨ª¨¡¨¡¨¡¨¡¨¡¨¡¨¡¨¥
+
+¡übsim-20160521
+   4dimage/gdepth-arm.emax5
+        000:SVC 00000000_4c14cfb9 EMAX5 start conf=00000000_00015c40 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_6e748320) EMAX_TERM(00000001_6e752e2e) c0 s0 i39 d203 l3221 r87 s1 e827 z1 t0 total=4379
+        000:SVC 00000000_4c14d177 EMAX5 start conf=00000000_00015c40 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_6e753ed2) EMAX_TERM(00000001_6e75e9e0) c0 s0 i39 d203 l3221 r87 s1 e827 z1 t0 total=4379
+        000:SVC 00000000_4c14d335 EMAX5 start conf=00000000_00015c40 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_6e75fa84) EMAX_TERM(00000001_6e7638d2) c0 s0 i39 d203 l437 r87 s1 e827 z1 t0 total=1595
+        000:SVC 00000000_4c14d4f3 EMAX5 start conf=00000000_00015c40 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_6e764976) EMAX_TERM(00000001_6e76f484) c0 s0 i39 d203 l3221 r87 s1 e827 z1 t0 total=4379
+        000:SVC 00000000_4c14d501 EMAX5 drain_dirty_lmm EMAX_START(00000001_6e76f81c) EMAX_TERM(00000001_6e770014) c0 s0 i0 d203 l0 r0 s0 e0 z1 t0 total=204
+        000:PA 00000000_4c14d511 siml_emax5: tinit=00000000_00000000  conf=00000000_00000000 scon=00000000_00000000 lmmi=00000000_0000abd8 drain=00000000_00037e7f load=00000000_002e6f08
+                                              regv=00000000_00017f58 start=00000000_00000468 exec=00000000_000e3bf8 term=00000000_00000469 trans=00000000_00000000
+         EMAX240MHz=00000000_00425d80(icidlrett) ARM2400MHz=00000000_02e0ff72
+        000:step=00000000_0007ad65 cycle=00000000_02e0ff72 i1(100.0%)wait=00000000_00000000 d1( 67.1% hit=00000000_000287d1 mis=00000000_00013d49)wait=00000000_00154348 l2( 90.3% hit=00000000_00011e6d mis=00000000_00001edc) g2(  0.0% hit=00000000_00000000 mis=00000000_00001edc) flush(L1->00000000_001a76cccycle, L2->00000000_00000020cycle)
+   4dimage/gdepth-arm.emax5nc
+        000:step=00000000_91915ef8 cycle=00000000_ac79be75 i1(100.0%)wait=00000000_00000000 d1( 98.0% hit=00000000_0aa60a6b mis=00000000_003663f2)wait=00000000_04072778 l2( 67.5% hit=00000000_0024bb0d mis=00000000_0011a8e8) g2(  0.0% hit=00000000_00000000 mis=00000000_00120b1e) flush(L1->00000000_00000000cycle, L2->00000000_00000000cycle)
+   4dimage/gdepth-arm
+        000:step=00000000_62c99be9 cycle=00000000_7c58448f i1(100.0%)wait=00000000_00000000 d1( 98.9% hit=00000000_1259d090 mis=00000000_00365ef8)wait=00000000_0203315b l2( 67.6% hit=00000000_0024c4c1 mis=00000000_00119a37) g2(  0.0% hit=00000000_00000000 mis=00000000_0011f88d) flush(L1->00000000_00000000cycle, L2->00000000_00000000cycle)
+
+   4dimage/gather-arm.emax5
+        000:SVC 00000000_4bb16146 EMAX5 start conf=00000000_00015980 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_44f539ae) EMAX_TERM(00000001_44f56e60) c0 s0 i39 d390 l4 r87 s1 e827 z1 t0 total=1349
+        000:SVC 00000000_4bb16256 EMAX5 start conf=00000000_00015980 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_44f57b62) EMAX_TERM(00000001_44f5d454) c0 s0 i39 d390 l932 r87 s1 e827 z1 t0 total=2277
+        000:SVC 00000000_4bb16366 EMAX5 start conf=00000000_00015980 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_44f5e156) EMAX_TERM(00000001_44f63a48) c0 s0 i39 d390 l932 r87 s1 e827 z1 t0 total=2277
+        000:SVC 00000000_4bb16476 EMAX5 start conf=00000000_00015980 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_44f6474a) EMAX_TERM(00000001_44f6a03c) c0 s0 i39 d390 l932 r87 s1 e827 z1 t0 total=2277
+        000:SVC 00000000_4bb16586 EMAX5 start conf=00000000_00015980 lmmi=00000000_4ffff600 regv=00000000_4fffd600 EMAX_START(00000001_44f6ad3e) EMAX_TERM(00000001_44f70630) c0 s0 i39 d390 l932 r87 s1 e827 z1 t0 total=2277
+        000:SVC 00000000_4bb16594 EMAX5 drain_dirty_lmm EMAX_START(00000001_44f709c8) EMAX_TERM(00000001_44f7190e) c0 s0 i0 d390 l0 r0 s0 e0 z1 t0 total=391
+        000:PA 00000000_4bb1659f siml_emax5: tinit=00000000_00000000  conf=00000000_00000037 scon=00000000_00000000 lmmi=00000000_0000abd8 drain=00000000_0006b674 load=00000000_000e0b80
+                                              regv=00000000_00017f58 start=00000000_00000468 exec=00000000_000e3bf8 term=00000000_00000469 trans=00000000_00000000
+         EMAX240MHz=00000000_00253224(icidlrett) ARM2400MHz=00000000_01ad8060
+        000:step=00000000_0004aeb5 cycle=00000000_01ad8060 i1(100.0%)wait=00000000_00000161 d1( 65.4% hit=00000000_000203a2 mis=00000000_00011133)wait=00000000_0011186a l2( 88.6% hit=00000000_0000f22a mis=00000000_00001f1d) g2(  0.0% hit=00000000_00000000 mis=00000000_00001f1d) flush(L1->00000000_0017b5c9cycle, L2->00000000_00000028cycle)
+   4dimage/gather-arm.emax5nc
+        000:step=00000000_295b38a2 cycle=00000000_3b23cec6 i1(100.0%)wait=00000000_00000000 d1( 95.4% hit=00000000_0192436f mis=00000000_00136dc8)wait=00000000_0267bd1a l2( 12.1% hit=00000000_00025c2e mis=00000000_001111d5) g2(  0.0% hit=00000000_00000000 mis=00000000_0012bc44) flush(L1->00000000_00000000cycle, L2->00000000_00000000cycle)
+   4dimage/gather-arm
+        000:step=00000000_09a8fdca cycle=00000000_21fbd6f5 i1(100.0%)wait=00000000_00000000 d1( 94.7% hit=00000000_015d1ab7 mis=00000000_001359fd)wait=00000000_0136cb21 l2( 11.9% hit=00000000_00024d87 mis=00000000_00110c85) g2(  0.0% hit=00000000_00000000 mis=00000000_0012b140) flush(L1->00000000_00000000cycle, L2->00000000_00000000cycle)
+
+¡übsim-20160520 ¡Ä DRAIN/LOAD¤Î¸õÊä¤Þ¤Ç¤òÁÆ¤¯skip¤¹¤ëµ¡¹½¤òÄÉ²Ã,EMAX5µ¯Æ°¥ª¡¼¥Ð¥Ø¥Ã¥É¸«Ä¾¤·(ACPÀÜÂ³¤Ç¤ÏstackÎÎ°è¤ÎL2-flushÉÔÍ×)
+   ../../src/bsim/bsim -x test007-arm.emax5|jl¡Êmapdist=1,lmp,lmd¡Ë
+        000:SVC 00000000_000aaa88 EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d8  l194 r87 s1 e221 z1 t0 total=606
+        000:SVC 00000000_000aab5a EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39 ¡úd8  ¡úl8 r87 s1 e221 z1 t0 total=367
+        000:SVC 00000000_000aac2c EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39 ¡úd8  ¡úl8 r87 s1 e221 z1 t0 total=367
+   ../../src/bsim/bsim -x test006-arm.emax5|jl¡Êmapdist=1¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d6  l193 r87 s1 e221 z1 t0 total=603
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39  d50 ¡úl69 r87 s1 e221 z1 t0 total=470
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39  d50 ¡úl69 r87 s1 e221 z1 t0 total=470
+   ../../src/bsim/bsim -x test005-arm.emax5|jl¡Êmapdist=0¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d6  l193 r87 s1 e221 z1 t0 total=603
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 s0 i39  d50  l193 r87 s1 e221 z1 t0 total=592
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 s0 i39  d50  l193 r87 s1 e221 z1 t0 total=592
+¡übsim-20160506 ¡Ä CONF¥·¥Õ¥Èµ¡Ç½¡ÊSTATUS_SCON¡Ë¤òÄÉ²Ã¡¥bsim¤Ï¡¤#define FEATURE_SHIFT_CONF ¤ÇÍ­¸ú²½
+   ../../src/bsim/bsim -x test005-arm.emax5|jl¡Êmapdist=0¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d33  l219 r87 s1 e221 z1 t0 total=656
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 s0 i39   d76  l219 r87 s1 e221 z1 t0 total=644
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 s0 i39   d76  l219 r87 s1 e221 z1 t0 total=644
+   ../../src/bsim/bsim -x test006-arm.emax5|jl¡Êmapdist=1¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d33  l219 r87 s1 e221 z1 t0 total=656
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39   d76 ¡úl95 r87 s1 e221 z1 t0 total=522
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39   d76 ¡úl95 r87 s1 e221 z1 t0 total=522
+   ../../src/bsim/bsim -x test007-arm.emax5|jl¡Êmapdist=1,lmp,lmd¡Ë
+        000:SVC 00000000_000aaa88 EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 s0 i39   d33  l219 r87 s1 e221 z1 t0 total=656
+        000:SVC 00000000_000aab5a EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39 ¡úd33 ¡úl33 r87 s1 e221 z1 t0 total=417
+        000:SVC 00000000_000aac2c EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600   c0 s2 i39 ¡úd33 ¡úl33 r87 s1 e221 z1 t0 total=417
+¡übsim-20160501 ¡Ä test007Æ°ºî¡ÊEXEC¤Èlmd/lmpÆ±»þÆ°ºî¡Ë
+   ../../src/bsim/bsim -x test005-arm.emax5|jl¡Êmapdist=0¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39   d33  l219 r87 e221 z1 t0
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 i39   d76  l219 r87 e221 z1 t0
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600 ¡úc0 i39   d76  l219 r87 e221 z1 t0
+   ../../src/bsim/bsim -x test006-arm.emax5|jl¡Êmapdist=1¡Ë
+        000:SVC 00000000_000aaa81 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39   d33  l219 r87 e221 z1 t0
+        000:SVC 00000000_000aab4c EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39   d76 ¡úl95 r87 e221 z1 t0
+        000:SVC 00000000_000aac17 EMAX5 start conf=00000000_00015420 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39   d76 ¡úl95 r87 e221 z1 t0
+   ../../src/bsim/bsim -x test007-arm.emax5|jl¡Êmapdist=1,lmp,lmd¡Ë
+        000:SVC 00000000_000aaa88 EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39   d33  l219 r87 e221 z1 t0
+        000:SVC 00000000_000aab5a EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39 ¡úd33 ¡úl33 r87 e221 z1 t0
+        000:SVC 00000000_000aac2c EMAX5 start conf=00000000_00015440 lmmi=00000000_4ffff600 regv=00000000_4fffd600  c55 i39 ¡úd33 ¡úl33 r87 e221 z1 t0
+----

@@ -1,0 +1,83 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION	      = -mstrict-align -DDEBUG -DCYCLECNT -DARMSIML -DEMAX6
+PROGRAM       =	mm-csim.emax6nc inv-csim.emax6nc cnn-csim.emax6nc gather-csim.emax6nc gdepth-csim.emax6nc
+CPP           = aarch64-elf-cpp
+CC            = aarch64-elf-gcc
+CFLAGS        = -I. -O3 -Wno-attributes $(OPTION)
+AS            = aarch64-elf-as
+ASFLAGS       = 
+LD            = aarch64-elf-ld
+LDFLAGS       =	-static -M $(PROJTOP)/lib/asim64-lib/_map
+LIBS          =	-lgcc -lm -lc
+LIBFLAGS      = -L$(PROJTOP)/lib/gcc/aarch64-elf/4.8.2/ -L$(PROJTOP)/aarch64-elf/lib/
+OBJS          = mm+rmm.o inv+rmm.o cnn+rmm.o gather+rmm.o gdepth+rmm.o
+SRCS          = mm+rmm.c inv+rmm.c cnn+rmm.c gather+rmm.c gdepth+rmm.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~
+
+mm-csim.emax6nc:	mm+rmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+mm+rmm.o:	mm+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+inv-csim.emax6nc:	inv+rmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+inv+rmm.o:	inv+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+cnn-csim.emax6nc:	cnn+rmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+cnn+rmm.o:	cnn+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+gather-csim.emax6nc:	gather+rmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+gather+rmm.o:	gather+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+gdepth-csim.emax6nc:	gdepth+rmm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+gdepth+rmm.o:	gdepth+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+###
+
+mm+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+inv+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+cnn+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+gather+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c
+gdepth+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

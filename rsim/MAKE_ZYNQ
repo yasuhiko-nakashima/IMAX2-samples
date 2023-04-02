@@ -1,0 +1,6 @@
+#!/bin/csh
+make -f Makefile-zynq.emax6+dma clean
+make -f Makefile-zynq all clean
+make -f Makefile-zynq.emax6 all clean
+make -f Makefile-zynq.emax6+dma all clean
+make -f Makefile-zynq.emax6nc all clean

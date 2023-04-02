@@ -1,0 +1,10 @@
+make -f Makefile-bsd		all clean
+#make -f Makefile-bsd.emax5nc	all clean
+make -f Makefile-bsd.emax6nc	all clean
+#make -f Makefile-bsim		all clean
+#make -f Makefile-bsim.emax5nc	all clean
+#make -f Makefile-bsim.emax5	all clean
+make -f Makefile-csim		all clean
+make -f Makefile-csim.emax6nc	all clean
+make -f Makefile-csim.emax6	all clean
+make -f Makefile-csim.emax6+dma	all clean

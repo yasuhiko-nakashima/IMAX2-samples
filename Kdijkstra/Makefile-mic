@@ -1,0 +1,38 @@
+
+## EMAX4 Instruction Simulator         ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+#-DDEBUG	...for DEBUG
+
+PROJTOP	      = ../../
+OPTION        = -DPTHREAD -D_open=open -D_read=read -D_write=write -D_close=close
+PROGRAM       = kdijkstra-mic
+CC            = icc
+AS            = 
+LD            = 
+CFLAGS        = -I. -O2 $(OPTION)
+ASFLAGS       = 
+LDFLAGS       =
+LIBFLAGS      = -lm -lc -lpthread
+LIBS          =
+OBJS	      =	kdijkstra.o
+SRCS	      =	kdijkstra.c
+
+all:		$(PROGRAM)
+
+run:;		LD_LIBRARY_PATH=..
+		export LD_LIBRARY_PATH
+		time ./$(PROGRAM) 8 ../graph-data/twitter.edges+dist
+
+run.small:;	LD_LIBRARY_PATH=..
+		export LD_LIBRARY_PATH
+		time ./$(PROGRAM) 8 ../graph-data/matrix.edges+dist
+
+$(PROGRAM):     $(OBJS)
+		icc $(CFLAGS) -simd -vec-report3 -openmp -mcmodel=large $(OPTION) -opt-threads-per-core=4 -mmic kdijkstra.c -o $(PROGRAM) -lpthread
+
+clean:;		rm -f $(OBJS) core
+
+###

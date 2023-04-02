@@ -1,0 +1,11 @@
+【疎行列を使う版】                         2021/11/05
+
+・Tricountは行列積と違って配列は１つ
+・頂点毎のneighborsが1行で表現できる #define MAXVERTICES  4096
+・列数の行合計がエッジ数             #define MAXEDGES    16384
+・とりあえず現状IMAXで書けるところまで書いた
+・search_qid_in_dst((Uint)qid, dst)をどうするか LMMにhash機能?
+  qidをidxとしてLMM参照,0:無し,1:有りでもできるが圧縮は?
+  現状では,vsearchのサイズがLMM容量を超える
+  1byte表現を1bit表現にすればさらに圧縮可能
+----

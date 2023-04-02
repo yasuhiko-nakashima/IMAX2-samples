@@ -1,0 +1,103 @@
+
+## IMAX2 Application Simulator         ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc(no-cgra)/emax
+## -DEMAX6     ... with emaxnc(no-cgra)/emax
+## -DEMAXNC    ... with emaxnc(no-cgra)
+## -DEMAXSC    ... with emaxsc(soft-cgra)
+## -DARMSIML   ... with csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile-bsd            bsd           :  none
+## Makefile-bsd.emax6nc    bsd+EMAX6NC   :           -DEMAXNC -DEMAX6
+## Makefile-bsd.emax6sc    bsd+EMAX6SC   :           -DEMAXSC -DEMAX6
+
+## Makefile-cent           cent          :  none
+## Makefile-cent.emax6nc   cent+EMAX6NC  :           -DEMAXNC -DEMAX6
+
+## Makefile-fugaku         fugaku        :  none
+## Makefile-fugaku.emax6nc fugaku+EMAX6NC:           -DEMAXNC -DEMAX6
+
+## Makefile-csim           csim          : -DARMSIML
+## Makefile-csim.emax6nc   csim+EMAX6NC  : -DARMSIML -DEMAXNC -DEMAX6
+## Makefile-csim.emax6+dma csim+EMAX6    : -DARMSIML          -DEMAX6 -DFPDDMA
+
+## Makefile-zynq           ZYNQ          : -DARMZYNQ
+## Makefile-zynq.emax6nc   ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAXNC -DEMAX6
+## Makefile-zynq.emax6+dma ZYNQ+EMAX6    : -DARMZYNQ          -DEMAX6 -DFPDDMA
+
+PROJTOP	      = ../../
+OPTION	      = -O3 -DDEBUG -DCYCLECNT -DEMAXSC -DEMAX6
+CPP           = cpp -P
+CC            = gcc
+CFLAGS        = -I/usr/local/include $(OPTION)
+LDFLAGS       = -L/usr/lib64 -L/usr/local/lib -lm -lX11 -lXext -lpthread
+
+PROGRAM	      =	test021-fugaku.emax6sc test022-fugaku.emax6sc test023-fugaku.emax6sc test024-fugaku.emax6sc
+OBJS          =	test021.o test022.o test023.o test024.o
+SRCS          =	test021.c test022.c test023.c test024.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *.s *-mark.c *-cppo.c *-emax6.c *-emax6s?.c
+
+test021-fugaku.emax6sc:	test021-emax6sc.o
+		$(CC) $(LDFLAGS) -o $@ $<
+
+test021-emax6sc.o:	test021-emax6sc.c
+		$(CC) $(CFLAGS) -c $<
+
+test021-emax6sc.c:	test021-emax6.c test021-emax6s1.c test021-emax6s2.c
+		cat test021-emax6s1.c test021-emax6.c test021-emax6s2.c > $@
+
+test021-emax6.c:	test021.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(CFLAGS) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test022-fugaku.emax6sc:	test022-emax6sc.o
+		$(CC) $(LDFLAGS) -o $@ $<
+
+test022-emax6sc.o:	test022-emax6sc.c
+		$(CC) $(CFLAGS) -c $<
+
+test022-emax6sc.c:	test022-emax6.c test022-emax6s1.c test022-emax6s2.c
+		cat test022-emax6s1.c test022-emax6.c test022-emax6s2.c > $@
+
+test022-emax6.c:	test022.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(CFLAGS) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test023-fugaku.emax6sc:	test023-emax6sc.o
+		$(CC) $(LDFLAGS) -o $@ $<
+
+test023-emax6sc.o:	test023-emax6sc.c
+		$(CC) $(CFLAGS) -c $<
+
+test023-emax6sc.c:	test023-emax6.c test023-emax6s1.c test023-emax6s2.c
+		cat test023-emax6s1.c test023-emax6.c test023-emax6s2.c > $@
+
+test023-emax6.c:	test023.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(CFLAGS) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+test024-fugaku.emax6sc:	test024-emax6sc.o
+		$(CC) $(LDFLAGS) -o $@ $<
+
+test024-emax6sc.o:	test024-emax6sc.c
+		$(CC) $(CFLAGS) -c $<
+
+test024-emax6sc.c:	test024-emax6.c test024-emax6s1.c test024-emax6s2.c
+		cat test024-emax6s1.c test024-emax6.c test024-emax6s2.c > $@
+
+test024-emax6.c:	test024.c
+		$(PROJTOP)/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(CFLAGS) $<-mark.c > $<-cppo.c
+		$(PROJTOP)/src/conv-c2c/conv-c2c $<-cppo.c
+
+###

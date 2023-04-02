@@ -1,0 +1,38 @@
+
+## SPARC Instruction Simulator         ##
+##   Copyright (C) 2002 by KYOTO UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##         nakashim@econ.kyoto-u.co.jp ##
+
+#-DDEBUG	...for DEBUG
+#-DSPARC	...for SPARC(big endian)
+#-DINTEL	...for INTEL(little endian)
+
+OPTION        = -DPTHREAD -D_open=open -D_read=read -D_write=write -D_close=close
+PROGRAM       = tricount-mic
+CC            = icc
+CFLAGS        = -I. -O2 $(OPTION)
+ASFLAGS       = 
+LDFLAGS       = 
+LIBFLAGS      = -lm -lc -lpthread
+DESTDIR	      = $(HOME)/bin
+
+OBJS	      = tricount.o
+
+SRCS	      = tricount.c
+
+all:		$(PROGRAM)
+
+run:;		scp -r miclib $(PROGRAM) tools@mic0:
+		ssh tools@mic0 (b407)
+		LD_LIBRARY_PATH=miclib
+		export LD_LIBRARY_PATH
+		time ./$(PROGRAM) graph-data/twitter.edges
+
+$(PROGRAM):     $(OBJS)
+		icc $(CFLAGS) -simd -vec-report3 -openmp -mcmodel=large $(OPTION) -opt-threads-per-core=4 -mmic tricount.c -o $(PROGRAM) -lpthread
+
+clean:;		rm -f $(OBJS) core
+
+###
+

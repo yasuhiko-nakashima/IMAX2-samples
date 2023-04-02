@@ -1,0 +1,86 @@
+【テスト一覧】
+
+  test024.c    … 疎行列圧縮
+  test023.c    … 疎行列版IMAX2でgdepthが砂嵐になったので調査用
+  test022.c    … 疎行列テスト
+  test021.c.202107020000-OK  小さい版
+  test021.c.202107010000-OK  ssim-zynq.eamx6+dma -x -i -r -I0 -V3 -C1 -F1 -S
+                             NCHIP=1 H=50 err=0.15の調査開始
+                             pc,ncの多数加算が足せてない？ stage3.v書き換え
+  test021.c.202105160000-OK  加算時に,追加の乗算結果を1/4に減らす
+  test021.c.202105150000-OK  乗算は6bitのまま途中加算を7bit化
+  test021.c.202105140000-OK  加算にsnapshot採用 SNAPSHOT_LENGTH=32
+                             ただ8bitは本質的に表現能力不足.次の手を考える
+  test021.c.202105130000-OK  Unary int Ver.4  8データx4に分割のほうが良い精度
+                             加算時に厳密カウントすれば分割損はない
+  test021.c.202105120000-OK  Unary int Ver.3 32データ一括spike積和
+  test021.c.202105110000-OK  LOOP=L/8に訂正(画像が正負対称になった
+  test021.c.202105100000-OK  stochastic/deterministic追加し比較中
+  test021.c.202105050000-OK  Unary Ver2.結果はそれっぽい模様
+  test021.c.202105020000-OK  Unary Ver1.初期値調整中.積和結果はそれっぽい模様
+  test021.c.202105010000-OK  smax2()の8bit-unary化一通り完成.積和結果はまだ変
+  test021.c.202104280000-OK  まずsmax0(),smax1(),smax2()正常動作
+  test021.c    … IDEA15:smax.c用
+  test020.c.202102220014-NG  PBL1-4 IMAP=4 b00 -> b00[][] 16st vsim:OK
+  test020.c.202102220013-NG  PBL1-4 IMAP=4 OMAP=1 より小さく 16st vsim:OK
+  test020.c.202102220012-NG  PBL1-4 IMAP=4 OMAP=1 より小さく 16st
+  test020.c.202102220012-NG  PBL1-4 IMAP=4 OMAP=1 逐次比較 16st 64stは○★
+  test020.c.202102220011-NG  PBL1-4 IMAP=4 OMAP=2 逐次比較 16st 64stが×★
+  test020.c.202102220010-NG  PBL1-4 IMAP=4 OMAP=2 CNN=2,実機再現(nc:OK) 16st
+  test020.c.202102220009-NG  PBL1-4 IMAP=2 OMAP=2 さらに小さく
+  test020.c.202102220008-OK  PBL1-5 IMAP=4 OMAP=8 imax.cにi,o->o,i適用
+  test020.c.202102220007-OK  PBL1-4 IMAP=2 i,oをo,iに交換,kerのaddr順に並替え
+  test020.c.202102220006-NG  PBL1-4 IMAP=2 OMAP=2 CNN=2,実機再現(nc:OK)
+  test020.c.202102220005-NG  PBL1-4 IMAP=2 OMAP=2 CNN=2,実機再現(nc:OK)
+  test020.c.202102220004-NG  PBL1-4 IMAP=2 OMAP=2 CNN=2,実機再現(nc:OK)
+  test020.c.202102220003-NG  PBL1-4 IMAP=2 OMAP=4 CNN=2,実機再現(nc:OK)
+  test020.c.202102220002-NG  PBL1-4 IMAP=2 OMAP=8 CNN=2,実機再現(nc:OK)
+  test020.c.202102220001-NG  PBL1-4 IMAP=2 OMAP=8 CNN=2,実機再現(nc:OK)
+  test020.c.202102220000-NG  PBL1-4 IMAP=4 OMAP=4 CNN=2,実機再現(nc:OK)
+  test020.c.202012151212-NG  PBL1-4 IMAP=4 OMAP=4 
+  test020.c.202012151211-NG  PBL1-4 IMAP=4 OMAP=8 
+  test020.c.202012151210-OK  PBL1-5 IMAP=4 OMAP=8 imax.cと同じ+PBL1-5:IMAP=4
+  test020.c.202012151203-OK  PBL1-5 IMAP=2 OMAP=8 組替
+  test020.c.202012151202-OK  PBL1-5 IMAP=1 OMAP=8 組替
+  test020.c.202012151201-NG  PBL1-5 IMAP=2 OMAP=8
+  test020.c.202012151200-OK  PBL1-5 IMAP=1 OMAP=8
+  test020.c.202012151130-OK  PBL1-4 IMAP=2 OMAP=8 さらにcore1テレコ
+  test020.c.202012151129-OK  IMAP=1 OMAP=8 元に戻す
+  test020.c.202012151128-OK  IMAP=2 OMAP=2 core1をテレコに
+  test020.c.202012151127-NG  IMAP=2 OMAP=2
+  test020.c.202012151126-OK  IMAP=1 OMAP=2
+  test020.c.202012151125-NG  IMAP=2 OMAP=2 csimでNG vsimはOK.実機タイミング?
+  test020.c.202012151124-NG  IMAP=2 OMAP=2 I=4 NG=110 nc=segfaultは無視可
+  test020.c.202012151123-OK  IMAP=1 OMAP=16    NG=0
+  test020.c.202012151122-OK  V1+V1(I) BS=8     NG=0
+  test020.c.202012151121-OK  V0+V0(C)      I-5 NG=3
+  test020.c.202012151120-OK  V1+V1(C)
+  test020.c.202012151119-OK  V1+V1(C)
+  test020.c.202012151118-OK  V1+V1(C)
+  test020.c.202012151117-OK  V1+V0(C)
+  test020.c.202012151116-OK  V1+V0(C)
+  test020.c.202012151115-OK  V0+V0           1-5 NG=3
+  test020.c.202012151114-NG  V1+V0           1-4 NG=480
+  test020.c.202012151113-NG  V0+V1           1-5 NG=98
+  test020.c.202012151111-OK  V0+V0           1-5 NG=3
+ *test020.c    … rsim/rsimのxmax_conv_backward():PIO/DMA混在テスト
+ *test019.c    … inv_x1,x2,x3:folding+self_loop:本来の逆行列
+ *test018.c    … inv_x0,x1,x2,x3:folding+self_loop:LMMは正方向のみ
+ *test017.c    … for(CHIP)for()for()
+ *test016.c    … for()for() + 後段exe(INIT0?)本田君のVBGMM対応
+  test015.c    … LDRQ+EX4+STRQ
+  test014.c    … FMA
+  test013.c    … filter.edge(for small debug).X<<24|Y<<16に対し,-O3が非アライン16byteLD命令が出る.-O2ではOK.Makefileは敢えて-O3にしてある
+  test012.c    … conv16 (batch) KM仕様のf=0,p=1,mapdist=0のテスト
+  test011.c    … conv16 (batch) 2x2 broadcast
+  test009.c    … gather (batch)
+ *test008.c    … 32Bアラインの途中でLMM切替え
+ *test007.c    … LD*6 -> ADD3*2 -> ADD -> ST (mapdist=1)+PLOAD
+  test006.c    … LD*6 -> ADD3*2 -> ADD -> ST (mapdist=1)
+  test005.c    … LD*6 -> ADD3*2 -> ADD -> ST (mapdist=0)
+  test004.c    … LD*6 -> FMA*2  -> FAD -> ST
+  test003.c    … pthread_create() -> pthread_join()
+  test002.c    … _barrier(0) -> _barrier(1)
+  test001.c    … _barrier(0) -> _barrier(1)
+ *test000.c    … OP_ST(lmx)のみmap(LMMのR/W試験用)
+----

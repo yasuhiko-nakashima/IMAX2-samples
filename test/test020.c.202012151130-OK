@@ -1,0 +1,1225 @@
+
+static char RcsHeader[] = "$Header: /usr/home/nakashim/proj-arm64/sample/mm_cnn_lf/RCS/mm.c,v 1.4 2018/02/04 10:28:53 nakashim Exp nakashim $";
+
+/*                          Copyright (C) 2013- by NAIST */
+/*                           Primary writer: Y.Nakashima */
+/*                                  nakashim@is.naist.jp */
+
+#ifndef UTYPEDEF
+#define UTYPEDEF
+typedef unsigned char      Uchar;
+typedef unsigned short     Ushort;
+typedef unsigned int       Uint;
+typedef unsigned long long Ull;
+typedef long long int      Sll;
+#if __AARCH64EL__ == 1
+typedef long double Dll;
+#else
+typedef struct {Ull u[2];} Dll;
+#endif
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <fcntl.h>
+#include <math.h>
+#ifndef ARMSIML
+#include <unistd.h>
+#include <sys/times.h>
+#include <sys/mman.h>
+#include <sys/resource.h>
+#include <pthread.h>
+#endif
+
+#if defined(EMAX6)
+#include "../../src/conv-c2c/emax6.h"
+#include "../../src/conv-c2c/emax6lib.c"
+#endif
+
+typedef struct _float2D {
+  int nstrides;
+  int stride_size;
+  float *data;
+} float2D;
+
+typedef struct _float4D { /* n*c*k*stride_size */
+  int nstrides;    /*frames*/
+  int nchannel;    /*RGB*/
+  int kstrides;    /*H*/
+  int stride_size; /*W*/
+  float *data;
+} float4D;
+
+#define CNN_DEPTH_MAX 9
+#define FC_DEPTH_MAX 3
+
+int  CNN_DEPTH = 4;
+int  FC_DEPTH = 1;
+
+typedef struct _CNNet {
+  /* int oheight; */
+  /* int owidth; */
+  /* int nbatch; */
+  /* int nchannel; */
+  /* int ksize, kstrides, psize; */
+  float4D ninput;
+
+  float2D tmp_col[CNN_DEPTH_MAX];
+  float2D tmp_dst[CNN_DEPTH_MAX];
+  float2D Ki2h[CNN_DEPTH_MAX];
+  float2D g_Ki2h[CNN_DEPTH_MAX];
+  float4D nhidden[CNN_DEPTH_MAX];
+  float4D nhiddenbak[CNN_DEPTH_MAX];
+  float2D hbias[CNN_DEPTH_MAX];
+  float2D g_hbias[CNN_DEPTH_MAX];
+  float4D npool[CNN_DEPTH_MAX];
+  float4D npoolbak[CNN_DEPTH_MAX];
+
+  float2D nflat[FC_DEPTH_MAX];
+  float2D Wh2o[FC_DEPTH_MAX];
+  float2D g_Wh2o[FC_DEPTH_MAX];
+  float2D nout[FC_DEPTH_MAX];
+  float2D noutbak[FC_DEPTH_MAX];
+  float2D obias[FC_DEPTH_MAX];
+  float2D g_obias[FC_DEPTH_MAX];
+} CNNet;
+
+struct c {
+  int isize;  /* isize x isize */
+  int ichan;  /* in_channels   */
+  int ksize;  /* ksize x ksize */
+  int osize;  /* osize x osize */
+  int ochan;  /* out_channels  */
+  int psize;  /* pooling_size  */
+};
+
+struct f {
+  int osize;  /* osize x osize */
+};
+
+struct c c[2][CNN_DEPTH_MAX]={ /* [0]:mnist [1]:cifar10 */
+{ /* MNIST(SLITx8 + BWx1) */
+  {28,1,5,24,9,2},{12,9,3,12,32,2},{ 6,32,2, 5,32,1},{ 5,32,2,4, 64,1},{ 4, 64,2,3, 64,1}  /*  4700    4368   |  5155    4137   |  8999    8999   |                 |                 *//*★C4*/
+},
+{ /* CIFAR10(SLITx8 + BGRx3) */
+  {32,3,5,28,11,2},{14,11,3,14,16,2},{7,16,2,7,32,1},{ 7,32,2,6, 32,2},{ 3, 32,2,2, 64,1},{2, 64,2,1, 64,1}  /*  F1                F1                F2                               *//*★C5*/
+}
+};
+
+struct f f[2][FC_DEPTH_MAX]={ /* [0]:mnist [1]:cifar10 *//* FC_DEPTH 1:{10}, 2:{100},{10}, 3:{200},{100},{10} */
+{ /* MNIST(SLITx8 + BWx1)   */
+  {200},{10},{10}
+},
+{ /* CIFAR10(SLITx8 + BGRx3)*/
+  {200},{40},{10}    /* FCeta=0.4f C4-F2                            | C5-F2 9000     V2-C5-F2 9000     | C6-F2 3817(58) V2-C6-F2 3594(57) *//*★*/
+}
+};
+
+void init_float2D(float2D *, int, int);
+void multiply_float2D(float2D *, const float2D *, int, const float2D*, int);
+void multiply_float2D_sum(float2D *, const float2D *, int, const float2D*, int);
+void init_float4D(float4D *, int, int, int, int);
+void copy4D(float4D *, const float4D *);
+void flat4Dto2D(float2D *, const float4D *);
+void raise2Dto4D(float4D *, const float2D *);
+void sum_rows4D(float2D *, float4D *);
+void show4D(const float4D);
+void show4D_limited(const float4D, int);
+void LoadParam2D(const char *, int, float2D *);
+void LoadParam4D(const char *, float4D *);
+void F4i2Ipl(int, int, int, int, unsigned int*, float4D *);
+void Ipl2F4i(int, int, int, unsigned int*, float4D *);
+void Ipl2F4h(int, int, int, unsigned int*, unsigned int*, float4D *);
+void init_net(CNNet *, int, struct c *, struct f *);
+void init_xmax(int, struct c *, struct f *);
+void xmax_conv_backward(float4D *, float2D *, float2D *, float4D *, int);
+
+Uchar   *membase;
+int     memsize;
+int     memalign;
+
+Uint    *i_inp; /* for CNN on ZYNQ_PL */
+Uint    *i_ker; /* for CNN on ZYNQ_PL */
+Uint    *i_out; /* for CNN on ZYNQ_PL */
+int     i_inp_max_size;
+int     i_ker_max_size;
+int     i_out_max_size;
+
+#define ERRTH  (5.0E-2)
+#define udiff(a,b) (((a)-(b)>=0.0?(a)-(b):(b)-(a))/((a)==0.0?1:(a)))
+#define setmax(max, new) { if (max < (new)) max = (new); }
+
+void init_float2D(float2D *a, int nstrides, int stride_size) {
+  if (a == NULL) {
+    printf("init_float2D error, 2D nullptr\n");
+    exit(-1);
+  }
+  a->nstrides = nstrides;
+  a->stride_size = stride_size;
+#ifdef USE_MKL
+  if ((a->data = (float *)mkl_malloc(nstrides * stride_size * sizeof(float), 64)) == NULL) {
+#else
+  if ((a->data = (float *)malloc(nstrides * stride_size * sizeof(float))) == NULL) {    
+#endif
+    printf("Can not allocate float2D with strides=%d, stride_size=%d\n",
+	   nstrides, stride_size);
+    exit(-1);
+  }
+  memset(a->data, 0, nstrides * stride_size * sizeof(float));
+}
+
+void init_float4D(float4D *a, int nstrides, int nchannel, int kstrides, int stride_size) {
+  if (a == NULL) {
+    printf("init_float4D error, 4D nullptr\n");
+    exit(-1);
+  }
+  a->nstrides = nstrides;
+  a->nchannel = nchannel;
+  a->kstrides = kstrides;
+  a->stride_size = stride_size;
+#ifdef USE_MKL
+  if ((a->data = (float *)mkl_malloc(nstrides * nchannel * kstrides * stride_size * sizeof(float), 64)) == NULL) {
+#else
+  if ((a->data = (float *)malloc(nstrides * nchannel * kstrides * stride_size * sizeof(float))) == NULL) {
+#endif
+    printf("Can not allocate float4D with nstrides=%d, nchannel=%d, kstrides=%d, stride_size=%d\n",
+	   nstrides, nchannel, kstrides, stride_size);
+    exit(-1);
+  }
+  memset(a->data, 0, nstrides * nchannel * kstrides * stride_size * sizeof(float));
+}
+
+void init_net(CNNet *net, int batch_size, struct c *c, struct f *f)
+{
+  int l;
+
+  if (net == NULL) {
+    printf("init_net error: got a nullptr net\n");
+    exit(-1);
+  }
+
+  /* setup nodes */
+  init_float4D(&(net->ninput),          batch_size,                       c[0].ichan,       c[0].isize,            c[0].isize);           /* batch=100, channel=1   28x28 */
+  for (l=0; l<CNN_DEPTH; l++) {
+    init_float2D(&(net->Ki2h[l]),       c[l].ochan,                       c[l].ichan*c[l].ksize*c[l].ksize);                              /* stride=8,         size=1x5x5 */
+    init_float2D(&(net->g_Ki2h[l]),     c[l].ochan,                       c[l].ichan*c[l].ksize*c[l].ksize);                              /* stride=8,         size=1x5x5 */
+    init_float4D(&(net->nhidden[l]),    batch_size,                       c[l].ochan,       c[l].osize,            c[l].osize);           /* batch=100, channel=8   24x24 */
+    init_float4D(&(net->npool[l]),      batch_size,                       c[l].ochan,       c[l].osize/c[l].psize, c[l].osize/c[l].psize);/* batch=100, channel=8   12x12 */
+  }
+}
+
+void init_xmax(int batch_size, struct c *c, struct f *f)
+{
+  int l;
+
+  for (l=0; l<CNN_DEPTH; l++) {
+    setmax(i_inp_max_size, batch_size * c[l].ichan * (c[l].isize+c[l].ksize-1) * (c[l].isize+c[l].ksize-1));
+    setmax(i_ker_max_size, c[l].ichan * ((c[l].ochan+3)&~3) * c[l].ksize * c[l].ksize);
+    setmax(i_out_max_size, batch_size * ((c[l].ochan+3)&~3) * c[l].osize * c[l].osize);
+  }
+  setmax(memsize, (i_inp_max_size+i_ker_max_size+i_out_max_size)*sizeof(int));
+  memalign = 32;
+
+#if defined(ARMZYNQ) && defined(EMAX6)
+  if (emax6_open() == NULL)
+    exit(1);
+  membase = emax_info.ddr_mmap;
+  /*{int i; for (i=0; i<(memsize+sizeof(Dll)-1)/sizeof(Dll); i++) *((Dll*)membase+i)=0;}*/
+#else
+  membase = (void*)malloc(memsize+memalign);
+  if ((Ull)membase & (memalign-1))
+    membase = (void*)(((Ull)membase & ~(memalign-1))+memalign);
+#endif
+
+  printf("membase: %08.8x\n", (Uint)membase);
+  i_inp = (Uint*)membase;
+  i_ker = (Uint*)i_inp + i_inp_max_size;
+  i_out = (Uint*)i_ker + i_ker_max_size;
+  printf("i_inp : %08.8x-%08.8x\n", (Uint)i_inp, (Uint)i_inp+i_inp_max_size*sizeof(int)-1);
+  printf("i_ker : %08.8x-%08.8x\n", (Uint)i_ker, (Uint)i_ker+i_ker_max_size*sizeof(int)-1);
+  printf("i_out : %08.8x-%08.8x\n", (Uint)i_out, (Uint)i_out+i_out_max_size*sizeof(int)-1);
+
+#if !defined(ARMZYNQ) && defined(EMAX6)
+  emax_info.dma_phys = DMA_BASE2_PHYS; /* defined in emax6lib.h */
+  emax_info.dma_mmap = emax_info.dma_phys;
+  emax_info.reg_phys = REG_BASE2_PHYS; /* defined in emax6lib.h */
+  emax_info.reg_mmap = emax_info.reg_phys;
+  emax_info.lmm_phys = LMM_BASE2_PHYS;
+  emax_info.lmm_mmap = emax_info.lmm_phys;
+  emax_info.ddr_phys = membase;
+  emax_info.ddr_mmap = emax_info.ddr_phys;
+#endif
+#if (defined(ARMSIML) || defined(ARMZYNQ)) && defined(EMAX6)
+  emax6.dma_ctrl  = emax_info.dma_mmap;
+  emax6.reg_ctrl  = emax_info.reg_mmap;
+  ((struct reg_ctrl*)emax6.reg_ctrl)->i[0].cmd = CMD_RESET;  // RESET
+#if defined(ARMZYNQ)
+  usleep(1);
+#endif
+  ((struct reg_ctrl*)emax6.reg_ctrl)->i[0].adtr = emax_info.ddr_mmap - emax_info.lmm_phys;
+  ((struct reg_ctrl*)emax6.reg_ctrl)->i[0].dmrp = 0LL;
+#endif
+}
+
+main()
+{
+  CNNet   *net;
+  int batch_size=2;
+  int i, j, k;
+
+  srand(0);
+  net = (CNNet *)malloc(sizeof(*net));
+  init_net(net, batch_size, c[1], f[1]);
+  init_xmax(batch_size, c[1], f[1]);
+
+  for (i=0; i<CNN_DEPTH; i++) {
+    for (j=0; j<net->nhidden[i].nstrides*net->nhidden[i].nchannel*net->nhidden[i].kstrides*net->nhidden[i].stride_size; j++)
+      net->nhidden[i].data[j] = 0.03f*j;
+    for (j=0; j<net->npool[i].nstrides*net->npool[i].nchannel*net->npool[i].kstrides*net->npool[i].stride_size; j++)
+      net->npool[i].data[j] = 0.02f*j;
+    for (j=0; j<net->Ki2h[i].nstrides*net->Ki2h[i].stride_size; j++)
+      net->Ki2h[i].data[j] = 0.01f*j;
+  }
+  /* ERRTH=5.0E-2 DMA:i=3(300) i=2(100) PIO:OK */
+  for (i=CNN_DEPTH-1; i>=0; i--) {
+    printf("i=%d\n", i);
+    /* (out)nhidden[i], (in) npool[i-1] -> (g_ker)g_Ki2h[i]  */
+    /* (out)nhidden[i], (ker)Ki2h[i]    -> (in)   npool[i-1] */
+    xmax_conv_backward(&(net->nhidden[i]), &(net->Ki2h[i]), &(net->g_Ki2h[i]), i==0?&(net->ninput):&(net->npool[i-1]), c[1][i].ksize);
+  }
+}
+
+void imemcpy(Uint *dst, Uint *src, int words)
+{
+  union {
+    Uint i[4];
+    Ull  l[2];
+    Dll  d;
+  } buf;
+
+  Uint loop, i;
+  if (words >= 1 && ((Ull)dst & sizeof(Uint))) { /* 4B-access odd */
+    *dst++ = *src++;
+    words--;
+  }
+  if (words >= 2 && ((Ull)dst & sizeof(Ull))) { /* 8B-access odd */
+    if ((Ull)src & sizeof(Uint)) {
+      buf.i[0] = *src++;
+      buf.i[1] = *src++;
+      *(Ull*)dst = buf.l[0];
+    }
+    else {
+      *(Ull*)dst = *(Ull*)src;
+      src += sizeof(Ull)/sizeof(Uint);
+    }
+    dst += sizeof(Ull)/sizeof(Uint);
+    words-=2;
+  }
+
+  if (loop = words/(sizeof(Dll)/sizeof(Uint))) {
+    if ((Ull)src & sizeof(Uint)) {
+      for(i=0; i<loop; i++) {
+	buf.i[0] = *src++;
+	buf.i[1] = *src++;
+	buf.i[2] = *src++;
+	buf.i[3] = *src++;
+	*(Dll*)dst = buf.d;
+	dst += sizeof(Dll)/sizeof(Uint);
+      }
+    }
+    else if ((Ull)src & sizeof(Ull)) {
+      for(i=0; i<loop; i++) {
+	buf.l[0] = *(Ull*)src;src += sizeof(Ull)/sizeof(Uint);
+	buf.l[1] = *(Ull*)src;src += sizeof(Ull)/sizeof(Uint);
+	*(Dll*)dst = buf.d;
+	dst += sizeof(Dll)/sizeof(Uint);
+      }
+    }
+    else {
+      for(i=0; i<loop; i++) {
+	*(Dll*)dst = *(Dll*)src;
+	src += sizeof(Dll)/sizeof(Uint);
+	dst += sizeof(Dll)/sizeof(Uint);
+      }
+    }
+    words -= loop*(sizeof(Dll)/sizeof(Uint));
+  }
+
+  if (words >= 2) { /* 8B-access */
+    if ((Ull)src & sizeof(Uint)) {
+      buf.i[0] = *src++;
+      buf.i[1] = *src++;
+      *(Ull*)dst = buf.l[0];
+    }
+    else {
+      *(Ull*)dst = *(Ull*)src;
+      src += sizeof(Ull)/sizeof(Uint);
+    }
+    dst += sizeof(Ull)/sizeof(Uint);
+    words-=2;
+  }
+  if (words >= 1) { /* 4B-access */
+    *dst++ = *src++;
+    words--;
+  }
+}
+
+void xmax_bzero(Uint *dst, int words)
+{
+  /* +----+-m-----+ */
+  /* |3x3 |       | */
+  /* |    |    src| */
+  /* +----+       | */
+  /* |       +----+ */
+  /* |       |    | */
+  /* |       | 3x3| */
+  /* +-------+----+ */
+  Uint loop, i;
+  if (words >= 1 && ((Ull)dst & sizeof(Uint))) { /* 4B-access odd */
+    *dst++ = 0;
+    words--;
+  }
+  if (words >= 2 && ((Ull)dst & sizeof(Ull))) { /* 8B-access odd */
+    *(Ull*)dst = 0;
+    dst += sizeof(Ull)/sizeof(Uint);
+    words-=2;
+  }
+
+  if (loop = words/(sizeof(Dll)/sizeof(Uint))) {
+    for(i=0; i<loop; i++) {
+#if __AARCH64EL__ == 1
+      *((Dll*)dst) = 0;
+#else
+      ((Dll*)dst)->u[0] = 0;
+      ((Dll*)dst)->u[1] = 0;
+#endif
+      dst += sizeof(Dll)/sizeof(Uint);
+    }
+    words -= loop*(sizeof(Dll)/sizeof(Uint));
+  }
+
+  if (words >= 2) { /* 8B-access */
+    *(Ull*)dst = 0;
+    dst += sizeof(Ull)/sizeof(Uint);
+    words-=2;
+  }
+  if (words >= 1) { /* 4B-access */
+    *dst++ = 0;
+    words--;
+  }
+}
+
+void xmax_cpyin(int order, Uint *dst, int *imo, Uint *src, int batch, int ic, int im, int m, int k)
+{
+  /* order 0: dst[batch][ic][im*im]  <- src[batch][ic][im*im] */
+  /* order 1: dst[ic][im][batch][im] <- src[batch][ic][im*im] */
+  /* order 2: dst[im][m]             <- src[im][m]            */
+
+  switch (order) {
+  case 0:
+    /* num=batch+ichan                            */
+    /* imiの周辺に0を追加しimoにコピー            */
+    /* k=3,(IM==M)             k=2,(IM==M)        */
+    /* +-------+imo-------+    +-----+--imo----+  */
+    /* | 0 0 0 |       dst|    | 0 0 |      dst|  */
+    /* |  +----+im=m---+  |    |  +--+--im=m---+  */
+    /* | 0|3x3 |       |  |    | 0|  |         |  */
+    /* | 0|    |    src|  |    +--+--+      src|  */
+    /* +--+----+       |  |    |  |            |  */
+    /* |  |       +----+--+    |  |            |  */
+    /* |  |       |    |0 |    |  |            |  */
+    /* |  |       | 3x3|0 |    |  |            |  */
+    /* |  +-------+----+  |    +--+------------+  */
+    /* |          | 0 0 0 |                       */
+    /* +----------+-------+                       */
+
+    /* imiとimoは同じサイズでコピー                                 */
+    /* k=3,(IM-k)/1+1==M       k=2,(IM-k)/1+1==M    k=1,(IM==M)     */
+    /* +-------+im--------+    +-----+--im-----+                    */
+    /* | x x x |       dst|    | x x |      dst|                    */
+    /* |  +----+-m-----+  |    |  +--+---m-----+    +--+--im=m---+  */
+    /* | x|3x3 |       |  |    | x|  |         |    |  |         |  */
+    /* | x|    |    src|  |    +--+--+      src|    +--+      src|  */
+    /* +--+----+       |  |    |  |            |    |            |  */
+    /* |  |       +----+--+    |  |            |    |            |  */
+    /* |  |       |    |x |    |  |            |    |         +--+  */
+    /* |  |       | 3x3|x |    |  |            |    |         |  |  */
+    /* |  +-------+----+  |    +--+------------+    +---------+--+  */
+    /* |          | x x x |                                         */
+    /* +----------+-------+                                         */
+    /* EMAX for large IM/M                                   *//*         burst_exe 6*6    ||         burst_exe 6*6    */
+    /*     +-----+  +----+-+----+---------+    +-----------+ *//* 7*8... | 7*8... | 7*8... || 7*8... | 7*8... | 7*8... */
+    /* unit|2    |  |7*7 | |7*7 |*IC  *100|    |2          | *//*-- -- --                  ||-- -- --                  *//* LMM=7*8*4B */
+    /*  |  |*    |  |ch0 | |ch1 |         | -> |*          | *//*         -- -- --         ||         -- -- --         *//*    =244B   */
+    /*  V  |2    |  +----+ +----+         |    |2          | *//*                  -- -- --||                  -- -- --*/
+    /*     |*ich |  |loop=RMGRP(6)*M(6)   |    |*ich       | *//* stg2     stg4     stg6   || stg2     stg4     stg6   *//* out=6*6*4B*4och */
+    /*     +-och-+  +---------------------+    +6*6*och----+ *//* img0     img0     img0   || img1     img1     img1   *//*    =576B        */
+    /*        32 ... lmf+lmx毎回DMA            |    32/4   | *//* ch0      ch1      ch2    || ch0      ch1      ch2    */
+    /*                                         +-----------+ */
+    if (im == m && 1<k) {
+      int n, i, w = im+k-1;
+      for (n=0; n<batch*ic; n++,dst+=w*w,src+=im*im) {
+	for (i=0; i<k/2; i++)
+	  xmax_bzero(dst+i*w, w);
+	for (i=k/2; i<=im+k/2-1; i++) {
+	  xmax_bzero (dst+i*w,               (k/2) );
+	  imemcpy(dst+i*w+(k/2),   src+(i-k/2)*im, im);
+	  if (k-1-(k/2)) xmax_bzero (dst+i*w+(k/2)+im, k-1-(k/2));
+	}
+	for (i=im+k/2; i<w; i++)
+	  xmax_bzero(dst+i*w, w);
+      }
+      *imo = w;
+    }
+    else {
+      imemcpy(dst, src, batch*ic*im*im);
+      *imo = im;
+    }
+    break;
+  case 1:
+    /* EMAX for small IM/M                                   */
+    /*     +-----+  +---------------------+    +-----------+ *//*         burst_exe 6*100  ||         burst_exe 6*100  *//* 100画像を1枚(7*700pix)に(7*100を7行) */
+    /* unit|     |  |+----PAD----+        |    |           | *//* 7*8*100| 7*8*100| 7*8*100|| 7*8*100| 7*8*100| 7*8*100*//* または7*7連続アドレスを100セット     */
+    /*  |  |2    |  ||7*7 | |7*7 |*100 *IC| -> |2          | *//*-- -- --                    -- -- --                  *//* LMM=7*8*4B*100 LMMstg2-7にload       */
+    /*  |  |*    |  ||im0 | |im1 |        |    |*          | *//* top=0   -- -- --            top=1   -- -- --         *//*    =22400B(RMGRP=7で2回再利用)<32KB  */
+    /*  V  |2    |  |+----+ +----+        |    |2          | *//*                  -- -- --                    -- -- --*/
+    /*     |*ich |  |loop=M(6)*BATCH(100) |    |*ich       | *//* stg2     stg4     stg6   || stg2     stg4     stg6   *//* out=6*4B*100*4och */
+    /*     +-och-+  +---------------------+    +6*100*och--+ *//* img0-99  img0-99  img0-99|| img0-99  img0-99  img0-99*//*    =9600B         */
+    /*        32 ... lmf+lmx毎回DMA            |      32/4 | *//* ch0      ch1      ch2    || ch0      ch1      ch2    */
+    /*                                         +-----------+ */
+    if (im == m && 1<k) {
+      int n1, n0, i, w = im+k-1;
+      for (n1=0; n1<batch; n1++) {           /* src-data順 */
+	for (n0=0; n0<ic; n0++,src+=im*im) { /* src-data順 */
+	  int ofs  = (n0*w*batch+n1)*w;      /* 複数imgの1行が連続,ch毎に連続 */
+	  int dist =  batch*w;               /* 複数imgの1行が連続,時アドレスは次行 */
+	  for (i=0; i<k/2; i++)
+	    xmax_bzero(dst+ofs+i*dist, w);
+	  for (i=k/2; i<=im+k/2-1; i++) {
+	    xmax_bzero (dst+ofs+i*dist,               (k/2) );
+	    imemcpy(dst+ofs+i*dist+(k/2),   src+(i-k/2)*im, im);
+	    if (k-1-(k/2)) xmax_bzero (dst+ofs+i*dist+(k/2)+im, k-1-(k/2));
+	  }
+	  for (i=im+k/2; i<w; i++)
+	    xmax_bzero(dst+ofs+i*dist, w);
+	}
+      }
+      *imo = w;
+    }
+    else {
+      int n1, n0, i;
+      for (n1=0; n1<batch; n1++) {           /* src-data順 */
+	for (n0=0; n0<ic; n0++,src+=im*im) { /* src-data順 */
+	  int ofs  = (n0*im*batch+n1)*im;
+	  int dist =  batch*im;
+	  for (i=0; i<im; i++)
+	    imemcpy(dst+ofs+i*dist, src+i*im, im);
+	}
+      }
+      *imo = im;
+    }
+    break;
+  case 2:
+    imemcpy(dst, src, im*m);
+    *imo = im;
+    break;
+  }
+}
+
+void xmax_cpyout(int order, Uint *dst, int batch, int oc, Uint *src, int m, int n, int oc4)
+{
+  /* order 0: dst[batch][oc][m*n] <- src[batch][oc4][m*n]  */
+  /* order 1: dst[batch][oc][m*n] <- src[oc4][m][batch][n] */
+  /* order 2: dst[m][n]           <- src[m][oc4=(n+3)&~3]  */
+
+  /* +-dst--------------+    +-imo--------------+ */
+  /* | OC | OC | OC |   | <- | OC4   | OC4   |  | */
+  /* +------------------+    +------------------+ */
+  int k, k2, k1, k0;
+
+  switch (order) {
+  case 0:
+    for (k=0; k<batch; k++,dst+=oc*m*n,src+=oc4*m*n)
+      imemcpy(dst, src, oc*m*n);
+    break;
+  case 1:
+    for (k2=0; k2<batch; k2++) {
+      for (k1=0; k1<oc; k1++) {
+	for (k0=0; k0<m; k0++,dst+=n)
+	  imemcpy(dst, src+((k1*m+k0)*batch+k2)*n, n);
+      }
+    }
+    break;
+  case 2:
+    if (n == oc4)
+      imemcpy(dst, src, m*n);
+    else {
+      for (k=0; k<m; k++,dst+=n,src+=oc4)
+	imemcpy(dst, src, n);
+    }
+    break;
+  }
+}
+
+void xmax_conv_backward(float4D *out, float2D *kernel, float2D *g_kernel, float4D *in, int ksize)
+{
+  int   kstride = 1;
+  int   BATCH  = in->nstrides;  //100
+  int   IC     = in->nchannel;  //3
+  int   IM     = in->kstrides;  //28
+  int   IMX;
+  int   OC     = out->nchannel; //8
+  int   M      = out->kstrides; //24
+  int   K      = ksize;         // 5,4,3,2,1
+  Uint  *in0   = in->data;      // IC*IM*IM
+  Uint  *ker   = kernel->data;  // OC*IC*K*K
+  Uint  *g_ker = g_kernel->data;// OC*IC*K*K
+  Uint  *out0  = out->data;     // OC*M*M
+  Uint  *ip0, *ip1, *ip2, *ip3, *ip4, *ip5, *op0, *kp, kidx, *kp0;
+  int   pad;
+  int   count, top, iset, oset, oc, w, ic, y, x;
+  int   y0, x0, ch;
+  Ull   IMX4, IM4, M4, IMX4M4, M4IM4, IMXlen, IMlen, Mlen;
+  Ull   CHIP, img, rofs, cofs, iofs, oofs, b00, c00;
+  Ull   LOOP1, LOOP0;
+  Ull   INIT1, INIT0;
+  Ull   AR[64][4];                     /* output of EX     in each unit */
+  Ull   BR[64][4][4];                  /* output registers in each unit */
+  Ull   r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15;
+  Ull   r16, r17, r18, r19, r20, r21, r22, r23, r24, r25, r26, r27, r28, r29, r30, r31;
+  Ull   cc0, cc1, cc2, cc3, ex0, ex1;
+
+  /*  unpack_patch2col(tmp_col, in, ksize, kstride, M, M); */
+  /*  for (oc=0;oc<OC;oc++) {                              */
+  /*    for (img=0;img<BATCH;img++)                        */
+  /*      memcpy(&(tmp_dst->data[(oc*BATCH+img)*M*M]), &(out->data[(oc+img*OC)*M*M]), M*M*sizeof(float));*/
+  /*  }                                                    */
+  /*  multiply_float2D(g_kernel, tmp_dst, 0, tmp_col, 1); // 8x25 dot 25x57600 --> 8x57600 */
+  /*  multiply_float2D(tmp_col, kernel, 1, tmp_dst, 0);    */
+  /*  pack_col2patch(in, tmp_col, ksize, kstride, M, M);   */
+
+  if (IM == M)
+    pad = 0;   /* PAD無し.in周囲0.0を仮定 */
+  else if ((IM - K)/1 + 1 == M)
+    pad = K/2; /* PAD有り.in周囲特別扱い不要 */
+  else {
+    printf("xmax_conv_backward error: IM=%d K=%d M=%d\n", IM, K, M);
+    printf("IM == M || (IM-K)/1+1 == M\n");
+    exit(-1);
+  }
+
+  /*================================================================================================*/
+  /*=== back_g_ker =================================================================================*/
+  /*================================================================================================*/
+
+#undef  IMAP
+#undef  OMAP
+#undef  W
+#undef  NCHIP
+#define IMAP  2
+#define OMAP  8
+#define W     1
+#define NCHIP 1
+
+#undef XMAX_VALIDATE
+#define XMAX_VALIDATE
+#ifdef XMAX_VALIDATE
+  /* g_kernel <- out, in */
+  for (img=0; img<BATCH; img++) {
+    for (ic=0; ic<IC; ic++) { /* set offset of input channel */
+      for (oc=0; oc<OC; oc++) { /* set output channel */
+	op0 = &out0[(img*OC+oc)*M*M]; /* top of output image */
+	kp = &g_ker[(oc*IC+ic)*K*K];
+	kidx = 0;
+	for (y=-(K/2); y<K-(K/2); y++) { /* kernel loop */
+	  for (x=-(K/2); x<K-(K/2); x++) {
+	    ip0 = &in0[(img*IC+ic)*IM*IM+(y+pad)*IM+(x+pad)]; /* top of input */
+	    kp0 = kp+kidx;
+	    for (rofs=0; rofs<M; rofs++) {
+	      for (cofs=0; cofs<M; cofs++) { /* image loop (cofs) */
+		float out = *(float*)&op0[rofs*M+cofs];
+		float in  = (0 <= rofs+y+pad && rofs+y+pad < IM
+			  && 0 <= cofs+x+pad && cofs+x+pad < IM)
+		  ? *(float*)&ip0[rofs*IM+cofs] : 0.0;
+		if (img==0 && rofs==0 && cofs==0) *(float*)kp0  = out * in;
+		else                              *(float*)kp0 += out * in;
+              }
+            }
+	    kidx++;
+          }
+        }
+      }
+    }
+  }
+#endif
+//efine PBL1_4_VERSION0
+#define PBL1_4_VERSION1
+#ifdef  PBL1_4_VERSION0
+  xmax_cpyin(0, i_out, &M,  out0, BATCH, OC,  M, M, 1); //imemcpy(i_out, out0, BATCH*OC*M*M);   M=M;
+  xmax_cpyin(0, i_inp, &IMX, in0, BATCH, IC, IM, M, K); //imemcpy(i_inp, in0,  BATCH*IC*IM*IM); IMX=IM;
+  xmax_bzero(i_ker, OC*IC*K*K); /* g_kernel */
+#if 0
+  for (img=0; img<BATCH; img++) {
+    for (ic=0; ic<IC; ic++) { /* set offset of input channel */
+      for (oc=0; oc<OC; oc++) { /* set output channel */
+	op0 = &i_out[(img*OC+oc)*M*M]; /* top of output image */
+	kp = &i_ker[(oc*IC+ic)*K*K];
+	kidx = 0;
+	for (y=-(K/2); y<K-(K/2); y++) { /* kernel loop */
+	  for (x=-(K/2); x<K-(K/2); x++) {
+	    ip0 = &i_inp[(img*IC+ic)*IMX*IMX+(y+K/2)*IMX+(x+K/2)]; /* top of input */
+	    kp0 = kp+kidx;
+	    for (rofs=0; rofs<M; rofs++) {
+	      for (cofs=0; cofs<M; cofs++) { /* image loop (cofs) */
+		float in  = *(float*)&ip0[rofs*IMX+cofs];
+		float out = *(float*)&op0[rofs*M+cofs];
+		*(float*)kp0 += out * in;
+              }
+            }
+	    kidx++;
+          }
+        }
+      }
+    }
+  }
+#else
+  IMX4   = IMX*4;
+  M4     = M*4;
+  IMX4M4 = IMX4<<32|M4;
+  IMXlen = IMX*IMX;
+  Mlen   = M*M;
+#if 0
+printf("   BACK00  IMXlen=%dB Mlen=%dB\n", (Uint)IMXlen*4, (Uint)Mlen*4);
+#endif
+  for (img=0; img<BATCH; img++) {
+    for (ic=0; ic<IC; ic++) { /* set offset of input channel */
+      for (oc=0; oc<OC; oc++) { /* set output channel */
+	op0 = &i_out[(img*OC+oc)*M*M]; /* top of output image */
+	kp = &i_ker[(oc*IC+ic)*K*K];
+	kidx = 0;
+	for (y=-(K/2); y<K-(K/2); y++) { /* kernel loop */
+	  for (x=-(K/2); x<K-(K/2); x++) {
+	    ip0 = &i_inp[(img*IC+ic)*IMX*IMX+(y+K/2)*IMX+(x+K/2)]; /* top of input */
+	    kp0 = kp+kidx;
+	    Uint *it00 = ip0;
+	    Uint *ot00 = op0;
+//EMAX5A begin back_g_ker mapdist=0
+      /*3*/ for (CHIP=0; CHIP<NCHIP; CHIP++) { /* output channels are parallelized by multi-chip (OC4/#chip) */
+	/*2*/ for (INIT1=1,LOOP1=M,rofs=(0-IMX4)<<32|((0-M4)&0xffffffff); LOOP1--; INIT1=0) {                            /* mapped to FOR() on BR[63][1][0] */ /* stage#0 */
+          /*1*/ for (INIT0=1,LOOP0=M,cofs=(0-4LL)<<32|((0-4LL)&0xffffffff); LOOP0--; INIT0=0) {                          /* mapped to FOR() on BR[63][0][0] */ /* stage#0 */
+                  exe(OP_ADD,      &rofs, rofs,            EXP_H3210, INIT0?IMX4M4:0, EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL,                  OP_NOP, 0LL); /* stage#0 */
+                  exe(OP_ADD,      &cofs, INIT0?cofs:cofs, EXP_H3210, 4LL<<32|4LL,    EXP_H3210, 0LL, EXP_H3210, OP_AND,   0xffffffffffffffffLL, OP_NOP, 0LL); /* stage#0 */
+                  exe(OP_ADD,      &iofs, rofs,            EXP_H3210, cofs,           EXP_H3210, 0LL, EXP_H3210, OP_AND,   0xffffffff00000000LL, OP_NOP, 0LL); /* stage#1 */
+                  exe(OP_ADD,      &oofs, rofs,            EXP_H3210, cofs,           EXP_H3210, 0LL, EXP_H3210, OP_AND,   0x00000000ffffffffLL, OP_NOP, 0LL); /* stage#1 */
+                  /****in0*****/
+                  mop(OP_LDUWR, 1, &BR[2][0][1],           (Ull)ip0,  iofs, MSK_W1,   (Ull)it00, IMXlen, 0, 0,   NULL,     IMXlen);           /* stage#2 */
+                  mop(OP_LDUWR, 1, &BR[2][2][1],           (Ull)op0,  oofs, MSK_W0,   (Ull)ot00, Mlen,   0, 0,   NULL,     Mlen);             /* stage#2 */
+                  exe(OP_FML,      &AR[3][0], BR[2][2][1], EXP_H3210, BR[2][0][1],    EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#3 */
+                  /****final*****/
+		  exe(OP_NOP,      &AR[4][0], 0LL,         EXP_H3210, 0LL,            EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#4 (dummy to set target location) */
+		  mop(OP_LDUWR, 1, &b00,                   (Ull)kp0,  0LL,  MSK_W0,   (Ull)kp0,  1LL,    0, 1,   NULL,     1LL);              /* stage#4 */
+                  exe(OP_FAD,      &b00,      b00,         EXP_H3210, AR[3][0],       EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#4 */
+                  mop(OP_STWR,  1, &b00,                   (Ull)kp0,  0LL,  MSK_D0,   (Ull)kp0,  1LL,    0, 1,   NULL,     1LL);              /* stage#4 */
+                }
+              }
+            }
+//EMAX5A end
+	    kidx++;
+          }
+        }
+      }
+    }
+  }
+//EMAX5A drain_dirty_lmm
+#endif
+#ifdef XMAX_VALIDATE
+  count = 0;
+  for (ic=0; ic<IC; ic++) {
+    for (oc=0; oc<OC; oc++) {
+      for (y=0; y<K; y++) {
+        for (x=0; x<K; x++) {
+          float host = *(float*)&g_ker[(oc*IC+ic)*K*K+y*K+x];
+          float xmax = *(float*)&i_ker[(oc*IC+ic)*K*K+y*K+x];
+          if (udiff(host,xmax)>ERRTH) {
+            count++;
+            printf("[%d][%d][%d][%d]: g_ker=%7.5e(%8.8x) i_ker=%7.5e(%8.8x)\n", oc, ic, y, x, host, *(Uint*)&host, xmax, *(Uint*)&xmax);
+          }
+        }
+      }
+    }
+  }
+  if (count)
+    printf("Num of diffs 1-4: %d\n", count);
+#endif
+  xmax_cpyout(2, g_ker, 1, 1, i_ker, IC*K*K, OC, OC); /* g_kernel */
+#endif
+#ifdef  PBL1_4_VERSION1
+  /***********************************/
+  /* ★★★ PBL1-4 (g_kernel) ★★★ */
+  /***********************************/
+  xmax_cpyin(1, i_out, &M,  out0, BATCH, OC,  M, M, 1); //dst[OC][M][BATCH][M]     <- src[BATCH][OC][M][M]
+  xmax_cpyin(1, i_inp, &IMX, in0, BATCH, IC, IM, M, K); //dst[IC][IMX][BATCH][IMX] <- src[BATCH][IC][IM][IM]
+  xmax_bzero(i_ker, OC*IC*K*K); /* g_kernel */
+#if 0
+  for (oset=0; oset<((OC+OMAP-1)&~(OMAP-1)); oset+=OMAP) { /* set output channel */
+    Uint *ip0[IMAP], *op0[OMAP], *kp0[IMAP][OMAP];
+    for (rofs=0; rofs<M; rofs++) {
+      for (iset=0; iset<((IC+IMAP-1)&~(IMAP-1)); iset+=IMAP) { /* set offset of input channel */
+	kidx = 0;
+	for (y=-(K/2); y<K-(K/2); y++) { /* kernel loop */
+	  for (x=-(K/2); x<K-(K/2); x++) {
+	    for (ic=0; ic<IMAP; ic++)
+	      ip0[ic] = &i_inp[(iset+ic)*IMX*BATCH*IMX+(rofs+y+K/2)*BATCH*IMX+(x+K/2)]; /* input */
+	    for (oc=0; oc<OMAP; oc++)
+	      op0[oc] = &i_out[(oset+oc)*M*BATCH*M+rofs*BATCH*M]; /* output */
+	    for (ic=0; ic<IMAP; ic++) {
+	      for (oc=0; oc<OMAP; oc++)
+		kp0[ic][oc] = ((iset+ic)<IC && (oset+oc)<OC) ? &i_ker[((oset+oc)*IC+iset+ic)*K*K+kidx] : 0; /* NULL skip DMA */
+	    }
+	    for (ic=0; ic<IMAP&&(iset+ic)<IC; ic++) { /* set output channel */
+	      for (oc=0; oc<OMAP&&(oset+oc)<OC; oc++) { /* set output channel */
+		for (img=0; img<BATCH; img++) {
+		  for (cofs=0; cofs<M; cofs++) { /* image loop (cofs) */
+		    float in  = *(float*)&ip0[ic][img*IMX+cofs];
+		    float out = *(float*)&op0[oc][img*M+cofs];
+		    *(float*)kp0[ic][oc] += out * in;
+		  }
+		}
+	      }
+	    }
+	    kidx++;
+	  }
+        }
+      }
+    }
+  }
+#else
+  IMX4   = IMX*4;
+  M4     = M*4;
+  IMX4M4 = IMX4<<32|M4;
+  IMXlen = IMX*BATCH;
+  Mlen   = M*BATCH;
+#if 0
+printf("   BACK00  IMXlen=%dB Mlen=%dB\n", (Uint)IMXlen*4, (Uint)Mlen*4);
+#endif
+  /* +----------------------+-----------------------+                     */
+  /* |     inp[ic][row]     |out[oc+0][row+yx*]再利用 K行                 */
+  /* |                      |ker[oc+0][ic][yx*]     |                     */
+  /* +----------------------+-----------------------+                     */
+  /* |     inp[ic][row]     |out[oc+1][row+yx*]再利用 K行                 */
+  /* |                      |ker[oc+1][ic][yx*]     |                     */
+  /* +----------------------+-----------------------+                     */
+  /* |     inp[ic][row]     |out[oc+2][row+yx*]再利用 K行                 */
+  /* |                      |ker[oc+2][ic][yx*]     |                     */
+  /* +----------------------+-----------------------+                     */
+  /* |     inp[ic][row]     |out[oc+3][row+yx*]再利用 K行                 */
+  /* |                      |ker[oc+3][ic][yx*]     |                     */
+  /* +----------------------+-----------------------+                     */
+  /*                             oc:stageに展開                           */
+  /*                                   ic:最外ループ                      */
+  /*                                       y:段数を埋めるほど多くない     */
+  /*                                        x:隣接要素は複数LMMに分散不可 */
+  for (oset=0; oset<((OC+OMAP-1)&~(OMAP-1)); oset+=OMAP) { /* set output channel */
+    Uint cc0[IMAP], cc1[IMAP], inum[IMAP], *ip0[IMAP], *it0[IMAP], onum[OMAP], *op0[OMAP], *ot0[OMAP], *kp0[IMAP][OMAP];
+    for (rofs=0; rofs<M; rofs++) {
+      for (iset=0; iset<((IC+IMAP-1)&~(IMAP-1)); iset+=IMAP) { /* set offset of input channel */
+	kidx = 0;
+	for (y=-(K/2); y<K-(K/2); y++) { /* kernel loop */
+	  for (x=-(K/2); x<K-(K/2); x++) {
+	    for (ic=0; ic<IMAP; ic++) {
+	      inum[ic] = iset+ic;
+	      ip0[ic]  = &i_inp[(iset+ic)*IMX*BATCH*IMX+(rofs+y+K/2)*BATCH*IMX+(x+K/2)]; /* input */
+	      it0[ic]  = &i_inp[(iset+ic)*IMX*BATCH*IMX+(rofs+y+K/2)*BATCH*IMX];         /* input */
+	    }
+	    for (oc=0; oc<OMAP; oc++) {
+	      onum[oc] = oset+oc;
+	      op0[oc]  = &i_out[(oset+oc)*M*BATCH*M+rofs*BATCH*M]; /* output */
+	      ot0[oc]  = op0[oc];
+	    }
+	    for (ic=0; ic<IMAP; ic++) {
+	      for (oc=0; oc<OMAP; oc++)
+		kp0[ic][oc] = ((iset+ic)<IC && (oset+oc)<OC) ? &i_ker[((oset+oc)*IC+iset+ic)*K*K+kidx] : 0; /* NULL skip DMA */
+	    }
+
+#define back_g_ker_core1(b, i, o) \
+  exe(OP_CMP_LT,   &cc0[i],   onum[o], EXP_H3210,      OC,          EXP_H3210, 0LL,            EXP_H3210, OP_NOP, 0LL, OP_NOP, 0LL);    /* stage#1 */\
+  exe(OP_CMP_LT,   &cc1[i],   inum[i], EXP_H3210,      IC,          EXP_H3210, 0LL,            EXP_H3210, OP_NOP, 0LL, OP_NOP, 0LL);    /* stage#1 */\
+  mop(OP_LDUWR, 1, &BR[b][1][1],       (Ull)op0[o],    oofs,        MSK_W0,    (Ull)ot0[o],    Mlen,      0,      0,   NULL,   Mlen);   /* stage#2 */\
+  mop(OP_LDUWR, 1, &BR[b][2][1],       (Ull)ip0[i],    iofs,        MSK_W1,    (Ull)it0[i],    IMXlen,    0,      0,   NULL,   IMXlen); /* stage#2 IMXlenが大きいのでLMM*2使用 */\
+  exe(OP_NOP,      &AR[b][0], 0LL,     EXP_H3210,      0LL,         EXP_H3210, 0LL,            EXP_H3210, OP_NOP, 0LL, OP_NOP, 0LL);    /* stage#2 (dummy to set target location) */\
+  mop(OP_LDUWR, 1, &b00,               (Ull)kp0[i][o], 0LL,         MSK_W0,    (Ull)kp0[i][o], 1LL,       0,      1,   NULL,   1LL);    /* stage#2 foldはunit[0]に要指定 */\
+  exe(OP_FMA,      &b00,      b00,     EXP_H3210,      BR[b][2][1], EXP_H3210, BR[b][1][1],    EXP_H3210, OP_NOP, 0LL, OP_NOP, 0LL);    /* stage#2 */\
+  cex(OP_CEXE,     &ex0, 0, 0, cc1[i], cc0[i], 0x8888);                                                                                 /* stage#2 */\
+  mop(OP_STWR,ex0, &b00,               (Ull)kp0[i][o], 0LL,         MSK_D0,    (Ull)kp0[i][o], 1LL,       0,      1,   NULL,   1LL)     /* stage#2 */
+
+//EMAX5A begin back_g_ker mapdist=0
+      /*3*/ for (CHIP=0; CHIP<NCHIP; CHIP++) { /* output channels are parallelized by multi-chip (OC4/#chip) */
+        /*2*/ for (INIT1=1,LOOP1=BATCH,img=(0-IMX4)<<32|((0-M4)&0xffffffff); LOOP1--; INIT1=0) {                           /* mapped to FOR() on BR[63][1][0] */ /* stage#0 */
+          /*1*/ for (INIT0=1,LOOP0=M,cofs=(0-4LL)<<32|((0-4LL)&0xffffffff); LOOP0--; INIT0=0) {                            /* mapped to FOR() on BR[63][0][0] */ /* stage#0 */
+                  exe(OP_ADD,      &img,  img,             EXP_H3210,  INIT0?IMX4M4:0, EXP_H3210,  0LL, EXP_H3210, OP_NOP,   0LL,                  OP_NOP, 0LL); /* stage#0 */
+		  exe(OP_ADD,      &cofs, INIT0?cofs:cofs, EXP_H3210,  4LL<<32|4LL,    EXP_H3210,  0LL, EXP_H3210, OP_AND,   0xffffffffffffffffLL, OP_NOP, 0LL); /* stage#0 */
+		  exe(OP_ADD,      &iofs, img,             EXP_H3210,  cofs,           EXP_H3210,  0LL, EXP_H3210, OP_AND,   0xffffffff00000000LL, OP_NOP, 0LL); /* stage#1 */
+		  exe(OP_ADD,      &oofs, img,             EXP_H3210,  cofs,           EXP_H3210,  0LL, EXP_H3210, OP_AND,   0x00000000ffffffffLL, OP_NOP, 0LL); /* stage#1 */
+
+		  back_g_ker_core1( 2,  0,  0); /**** ic0 oc0*****/
+		  back_g_ker_core1( 3,  1,  0); /**** ic1 oc0*****/
+		  back_g_ker_core1( 4,  0,  1); /**** ic0 oc1*****/
+		  back_g_ker_core1( 5,  1,  1); /**** ic1 oc1*****/
+		  back_g_ker_core1( 6,  0,  2); /**** ic0 oc2*****/
+		  back_g_ker_core1( 7,  1,  2); /**** ic1 oc2*****/
+		  back_g_ker_core1( 8,  0,  3); /**** ic0 oc3*****/
+		  back_g_ker_core1( 9,  1,  3); /**** ic1 oc3*****/
+		  back_g_ker_core1(10,  0,  4); /**** ic0 oc4*****/
+		  back_g_ker_core1(11,  1,  4); /**** ic1 oc4*****/
+		  back_g_ker_core1(12,  0,  5); /**** ic0 oc5*****/
+		  back_g_ker_core1(13,  1,  5); /**** ic1 oc5*****/
+		  back_g_ker_core1(14,  0,  6); /**** ic0 oc6*****/
+		  back_g_ker_core1(15,  1,  6); /**** ic1 oc6*****/
+		  back_g_ker_core1(16,  0,  7); /**** ic0 oc7*****/
+		  back_g_ker_core1(17,  1,  7); /**** ic1 oc7*****/
+#if 0
+		  back_g_ker_core1(18,  2,  0); /**** ic2 oc0*****/
+		  back_g_ker_core1(19,  2,  1); /**** ic2 oc1*****/
+		  back_g_ker_core1(20,  2,  2); /**** ic2 oc2*****/
+		  back_g_ker_core1(21,  2,  3); /**** ic2 oc3*****/
+		  back_g_ker_core1(22,  2,  4); /**** ic2 oc4*****/
+		  back_g_ker_core1(23,  2,  5); /**** ic2 oc5*****/
+		  back_g_ker_core1(24,  2,  6); /**** ic2 oc6*****/
+		  back_g_ker_core1(25,  2,  7); /**** ic2 oc7*****/
+
+		  back_g_ker_core1(26,  3,  0); /**** ic3 oc0*****/
+		  back_g_ker_core1(27,  3,  1); /**** ic3 oc1*****/
+		  back_g_ker_core1(28,  3,  2); /**** ic3 oc2*****/
+		  back_g_ker_core1(29,  3,  3); /**** ic3 oc3*****/
+		  back_g_ker_core1(30,  3,  4); /**** ic3 oc4*****/
+		  back_g_ker_core1(31,  3,  5); /**** ic3 oc5*****/
+		  back_g_ker_core1(32,  3,  6); /**** ic3 oc6*****/
+		  back_g_ker_core1(33,  3,  7); /**** ic3 oc7*****/
+#endif
+                }
+              }
+            }
+//EMAX5A end
+            kidx++;
+          }
+        }
+      }
+    }
+  }
+//EMAX5A drain_dirty_lmm
+#endif
+#ifdef XMAX_VALIDATE
+  count = 0;
+  for (ic=0; ic<IC; ic++) {
+    for (oc=0; oc<OC; oc++) {
+      for (y=0; y<K; y++) {
+	for (x=0; x<K; x++) {
+	  float host = *(float*)&g_ker[(oc*IC+ic)*K*K+y*K+x];
+	  float xmax = *(float*)&i_ker[(oc*IC+ic)*K*K+y*K+x];
+	  if (udiff(host,xmax)>ERRTH) {
+	    count++;
+	    printf("[%d][%d][%d][%d]: g_ker=%7.5e(%8.8x) i_ker=%7.5e(%8.8x)\n", oc, ic, y, x, host, *(Uint*)&host, xmax, *(Uint*)&xmax);
+	  }
+	}
+      }
+    }
+  }
+  if (count)
+    printf("Num of diffs 1-4: %d\n", count);
+#endif
+  xmax_cpyout(2, g_ker, 1, 1, i_ker, IC*K*K, OC, OC); /* g_kernel */
+#endif
+
+  /*================================================================================================*/
+  /*=== back_in ====================================================================================*/
+  /*================================================================================================*/
+
+#undef  IMAP
+#undef  OMAP
+#undef  W
+#undef  NCHIP
+#define IMAP  1
+#define OMAP  8
+#define W     1
+#define NCHIP 1
+
+#undef XMAX_VALIDATE
+#define XMAX_VALIDATE
+#ifdef XMAX_VALIDATE
+  /* in <- kernel, out */
+  memset(in0, 0, sizeof(in0[0])*BATCH*IC*IM*IM);
+  if (K == 1 || IM-K+1 == M) { y0 = 0;    x0 = 0;    }
+  else if (IM == M)          { y0 = -K/2; x0 = -K/2; }
+  for (img=0;img<BATCH;img++) { /*100, 100*/
+    for (ch=0;ch<IC*K*K;ch++) { /*5x5, 8x3x3*/
+      ic = ch/(K*K);
+      y  = ch%(K*K)/K + y0;
+      x  = ch%(K*K)%K + x0;
+      for (oc=0; oc<OC; oc++) {
+	for (rofs=0;rofs<M;rofs++) { /*24, 10*/
+	  ip0 = &in0[((img*IC+ic)*IM+rofs+y)*IM+x];
+	  for (cofs=0;cofs<M;cofs++) { /*24, 10*/
+	    if (0<=rofs+y && rofs+y<IM && 0<=cofs+x && cofs+x<IM)
+	      *(float*)ip0 += *(float*)&ker[oc*IC*K*K+ch] * *(float*)&out0[img*M*M*OC+oc*M*M+rofs*M+cofs];
+	    ip0++;
+	  }
+	}
+      }
+    }
+  }
+#endif
+//efine PBL1_5_VERSION0
+#define PBL1_5_VERSION1
+#ifdef  PBL1_5_VERSION0
+//xmax_cpyin(0, i_out, &M, out0, BATCH, OC, M, M, 1); /* out *//*★★★削除可能★★★*/
+  xmax_cpyin(0, i_ker, &K, ker,  IC,    OC, K, K, 1); //imemcpy(i_ker, ker,  OC*IC*K*K); K=K;
+  xmax_bzero(i_inp, BATCH*IC*IM*IM); /* in */
+#if 0
+  if (K == 1 || IM-K+1 == M) { y0 = 0;    x0 = 0;    }
+  else if (IM == M)          { y0 = -K/2; x0 = -K/2; }
+  for (img=0;img<BATCH;img++) { /*100, 100*/
+    for (ch=0;ch<IC*K*K;ch++) { /*5x5, 8x3x3*/
+      ic = ch/(K*K);
+      y  = ch%(K*K)/K + y0;
+      x  = ch%(K*K)%K + x0;
+      for (oc=0; oc<OC; oc++) {
+	op0 = &i_out[img*M*M*OC+oc*M*M];
+	ip0 = &i_inp[(img*IC+ic)*IM*IM+y*IM+x];
+	float cker = *(float*)&i_ker[oc*IC*K*K+ch];
+	for (rofs=0;rofs<M;rofs++) { /*24, 10*/
+	  for (cofs=0;cofs<M;cofs++) { /*24, 10*/
+	    if (0<=rofs+y && rofs+y<IM && 0<=cofs+x && cofs+x<IM)
+	      *(float*)&ip0[rofs*IM+cofs] += cker * *(float*)&op0[rofs*M+cofs];
+	  }
+	}
+      }
+    }
+  }
+#else
+  IM4    = IM*4;
+  M4     = M*4;
+  M4IM4  = M4<<32|IM4;
+  IMlen  = IM*IM;
+  Mlen   = M*M;
+  if (K == 1 || IM-K+1 == M) { y0 = 0;    x0 = 0;    }
+  else if (IM == M)          { y0 = -K/2; x0 = -K/2; }
+#if 0
+printf("   BACK10  IMlen=%dB Mlen=%dB\n", (Uint)IMlen*4, (Uint)Mlen*4);
+#endif
+  for (img=0;img<BATCH;img++) { /*100, 100*/
+    for (ch=0;ch<IC*K*K;ch++) { /*5x5, 8x3x3*/
+      ic = ch/(K*K);
+      y  = ch%(K*K)/K + y0;
+      x  = ch%(K*K)%K + x0;
+      Ull  yIM4  = y*IM4;
+      Ull  x4    = x*4;
+      Ull  IMIM4 = IM*IM4;
+      for (oc=0; oc<OC; oc++) {
+	op0 = &i_out[img*M*M*OC+oc*M*M];
+	ip0 = &i_inp[(img*IC+ic)*IM*IM+y*IM+x];
+	c00 = (Ull)i_ker[oc*IC*K*K+ch];
+	Uint *ot00 = op0;                      
+	Uint *it00 = &i_inp[(img*IC+ic)*IM*IM];
+//EMAX5A begin back_in mapdist=0
+  /*3*/ for (CHIP=0; CHIP<NCHIP; CHIP++) { /* output channels are parallelized by multi-chip (OC4/#chip) */
+    /*2*/ for (INIT1=1,LOOP1=M,rofs=(0-M4)<<32|((0-IM4)&0xffffffff); LOOP1--; INIT1=0) {                             /* mapped to FOR() on BR[63][1][0] */ /* stage#0 */
+      /*1*/ for (INIT0=1,LOOP0=M,cofs=(0-4LL)<<32|((0-4LL)&0xffffffff); LOOP0--; INIT0=0) {                          /* mapped to FOR() on BR[63][0][0] */ /* stage#0 */
+              exe(OP_ADD,      &rofs, rofs,            EXP_H3210, INIT0?M4IM4:0,  EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL,                  OP_NOP, 0LL); /* stage#0 */
+              exe(OP_ADD,      &cofs, INIT0?cofs:cofs, EXP_H3210, 4LL<<32|4LL,    EXP_H3210, 0LL, EXP_H3210, OP_AND,   0xffffffffffffffffLL, OP_NOP, 0LL); /* stage#0 */
+              exe(OP_ADD,      &iofs, rofs,            EXP_H3210, cofs,           EXP_H3210, 0LL, EXP_H3210, OP_AND,   0x00000000ffffffffLL, OP_NOP, 0LL); /* stage#1 */
+              exe(OP_ADD,      &oofs, rofs,            EXP_H3210, cofs,           EXP_H3210, 0LL, EXP_H3210, OP_AND,   0xffffffff00000000LL, OP_NOP, 0LL); /* stage#1 */
+              /****in0*****/
+              exe(OP_ADD,      &r10,  rofs,            EXP_H3210, yIM4,           EXP_H3210, 0LL, EXP_H3210, OP_AND,   0x00000000ffffffffLL, OP_NOP, 0LL); /* stage#1 */
+              exe(OP_ADD,      &r11,  cofs,            EXP_H3210, x4,             EXP_H3210, 0LL, EXP_H3210, OP_AND,   0x00000000ffffffffLL, OP_NOP, 0LL); /* stage#1 */
+	      exe(OP_CMP_LT,   &cc0,  r10,             EXP_H3210, IMIM4,          EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#2 */
+	      exe(OP_CMP_LT,   &cc1,  r11,             EXP_H3210, IM4,            EXP_H3210, 0LL, EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#2 */
+	      mop(OP_LDUWR, 1, &BR[3][0][1],           (Ull)ip0,  iofs,  MSK_W0,  (Ull)it00, IMlen,  0, 1,   NULL,     IMlen);            /* stage#3 */
+	      mop(OP_LDUWR, 1, &BR[3][2][1],           (Ull)op0,  oofs,  MSK_W1,  (Ull)ot00, Mlen,   0, 0,   NULL,     Mlen);             /* stage#3 */
+	      exe(OP_FMA,      &AR[3][0], BR[3][0][1], EXP_H3210, c00,   EXP_H3210, BR[3][2][1],  EXP_H3210, OP_NOP,   0LL, OP_NOP, 0LL); /* stage#3 */
+	      cex(OP_CEXE,     &ex0,  0, 0, cc1, cc0, 0x8888);                                                                            /* stage#3 */
+	      mop(OP_STWR,ex0, &AR[3][0],              iofs,   (Ull)ip0, MSK_D0,  (Ull)it00, IMlen,  0, 1,   NULL,     IMlen);            /* stage#3 */
+	    }
+	  }
+	}
+//EMAX5A end
+      }
+    }
+  }
+//EMAX5A drain_dirty_lmm
+#endif
+#ifdef XMAX_VALIDATE
+  count = 0;
+  for (img=0; img<BATCH; img++) {
+    for (ic=0; ic<IC; ic++) {
+      for (y=0; y<IM; y++) {
+        for (x=0; x<IM; x++) {
+          float host = *(float*)&in0[(img*IC+ic)*IM*IM+y*IM+x];
+          float xmax = *(float*)&i_inp[(img*IC+ic)*IM*IM+y*IM+x];
+          if (udiff(host,xmax)>ERRTH) {
+            count++;
+            printf("[%d][%d][%d][%d]: in0=%7.5e(%8.8x) i_inp=%7.5e(%8.8x)\n", (Uint)img, ic, y, x, host, *(Uint*)&host, xmax, *(Uint*)&xmax);
+          }
+        }
+      }
+    }
+  }
+  if (count)
+    printf("Num of diffs 1-5: %d\n", count);
+#endif
+  xmax_cpyout(2, in0, 1, 1, i_inp, BATCH*IM*IM, IC, IC); /* in */
+#endif
+#ifdef  PBL1_5_VERSION1
+  /***********************************/
+  /* ★★★ PBL1-5 (in)       ★★★ */
+  /***********************************/
+//xmax_cpyin(1, i_out, &M, out0, BATCH, OC, M, M, 1); //dst[OC][M][BATCH][M] <- src[BATCH][OC][M][M]
+  xmax_cpyin(0, i_ker, &K, ker,  IC,    OC, K, K, 1); //imemcpy(i_ker, ker,  OC*IC*K*K); K=K;
+  xmax_bzero(i_inp, IC*IM*BATCH*IM); /* in */
+#if 0
+  if (K == 1 || IM-K+1 == M) { y0 = 0;    x0 = 0;    }
+  else if (IM == M)          { y0 = -K/2; x0 = -K/2; }
+  for (oset=0; oset<((OC+OMAP-1)&~(OMAP-1)); oset+=OMAP) { /* set output channel */
+    Uint *op0[OMAP]; float kp0[OMAP];
+    for (rofs=0;rofs<M;rofs++) { /*24, 10*/
+      for (ch=0;ch<IC*K*K;ch++) { /*5x5, 8x3x3*/
+	ic = ch/(K*K);
+	y  = ch%(K*K)/K + y0;
+	x  = ch%(K*K)%K + x0;
+	if (0<=rofs+y && rofs+y<IM) {
+	  ip0 = &i_inp[ic*IM*BATCH*IM+(rofs+y)*BATCH*IM+x];
+	  for (oc=0; oc<OMAP&&(oset+oc)<OC; oc++) { /* set output channel */
+	    op0[oc] = &i_out[(oset+oc)*M*BATCH*M+rofs*BATCH*M];
+	    kp0[oc] = *(float*)&i_ker[(oset+oc)*IC*K*K+ch];
+	    for (img=0;img<BATCH;img++) { /*100, 100*/
+	      for (cofs=0;cofs<M;cofs++) { /*24, 10*/
+		if (0<=cofs+x && cofs+x<IM) {
+		  *(float*)&ip0[img*IM+cofs] += kp0[oc] * *(float*)&op0[oc][img*M+cofs];
+		}
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+#else
+  IM4    = IM*4;
+  M4     = M*4;
+  M4IM4  = M4<<32|IM4;
+  IMlen  = IM*BATCH;
+  Mlen   = M*BATCH;
+#if 0
+printf("   BACK10  IMlen=%dB Mlen=%dB\n", (Uint)IMlen*4, (Uint)Mlen*4);
+#endif
+  /* +----------------------+-----------------------+                     */
+  /* |   ker[oc+0][ic][yx]  |out[oc+0][row+yx*]再利用 K行                 */
+  /* +----------------------+-----------------------+                     */
+  /* |   ker[oc+1][ic][yx]  |out[oc+1][row+yx*]再利用 K行                 */
+  /* +----------------------+-----------------------+                     */
+  /* |   ker[oc+2][ic][yx]  |out[oc+2][row+yx*]再利用 K行                 */
+  /* +----------------------+-----------------------+                     */
+  /* |   ker[oc+3][ic][yx]  |out[oc+3][row+yx*]再利用 K行                 */
+  /* |                      |inp[ic][row]           |                     */
+  /* +----------------------+-----------------------+                     */
+  /*                             oc:stageに展開                           */
+  /*                             ic:最外ループ                            */
+  /*                                       y:段数を埋めるほど多くない     */
+  /*                                        x:行方向                      */
+  if (K == 1 || IM-K+1 == M) { y0 = 0;    x0 = 0;    }
+  else if (IM == M)          { y0 = -K/2; x0 = -K/2; }
+  for (oset=0; oset<((OC+OMAP-1)&~(OMAP-1)); oset+=OMAP) { /* set output channel */
+    Uint *it0, onum[OMAP], *op0[OMAP], *ot0[OMAP], kp0[OMAP];
+    for (rofs=0;rofs<M;rofs++) { /*24, 10*/
+      for (ch=0;ch<IC*K*K;ch++) { /*5x5, 8x3x3*/
+	ic = ch/(K*K);
+	y  = ch%(K*K)/K + y0;
+	x  = ch%(K*K)%K + x0;
+	Ull  yIM4  = y*IM4;
+	Ull  x4    = x*4;
+	Ull  IMIM4 = IM*IM4;
+	if (0<=rofs+y && rofs+y<IM) {
+	  ip0 = &i_inp[ic*IM*BATCH*IM+(rofs+y)*BATCH*IM+x];
+	  it0 = &i_inp[ic*IM*BATCH*IM+(rofs+y)*BATCH*IM]; // xのマイナス成分を除去
+          for (oc=0; oc<OMAP; oc++) {
+	    onum[oc] = oset+oc;
+	    op0[oc]  = &i_out[(oset+oc)*M*BATCH*M  +rofs*BATCH*M];
+	    ot0[oc]  = op0[oc];
+	    kp0[oc]  = (oset+oc) < OC ? (Ull)i_ker[(oset+oc)*IC*K*K+ch] : 0; /* 0.0 */
+	  }
+
+#define back_in_core1(b, bp1, m) \
+  mop(OP_LDUWR, 1, &BR[b][0][1],          (Ull)op0[m], oofs,   MSK_W1,    (Ull)ot0[m], Mlen,      0,      0,   NULL,   Mlen); /* stage#2 */\
+  exe(OP_FMA,      &AR[bp1][0], AR[b][0], EXP_H3210,   kp0[m], EXP_H3210, BR[b][0][1], EXP_H3210, OP_NOP, 0LL, OP_NOP, 0LL)   /* stage#3 */
+
+#define back_in_final(b, bp2) \
+  exe(OP_ADD,      &r10,      cofs,            EXP_H3210,   x4,            EXP_H3210, 0LL,      EXP_H3210, OP_AND, 0x00000000ffffffffLL, OP_NOP, 0LL);   /* stage#5 */\
+  exe(OP_CMP_LT,   &cc0,      r10,             EXP_H3210,   IM4,           EXP_H3210, 0LL,      EXP_H3210, OP_NOP, 0LL,                  OP_NOP, 0LL);   /* stage#6 */\
+  mop(OP_LDUWR, 1, &BR[bp2][0][1],             (Ull)ip0,    iofs,          MSK_W0,    (Ull)it0, IMlen,     0,      1,                    NULL,   IMlen); /* stage#7 */\
+  exe(OP_FAD,      &AR[bp2][0], AR[b][0],      EXP_H3210,   BR[bp2][0][1], EXP_H3210, 0LL,      EXP_H3210, OP_NOP, 0LL,                  OP_NOP, 0LL);   /* stage#7 */\
+  cex(OP_CEXE,     &ex0, 0, 0, 0, cc0, 0xaaaa);                                                                                                          /* stage#7 */\
+  mop(OP_STWR,ex0, &AR[bp2][0],                iofs,        (Ull)ip0,      MSK_D0,    (Ull)it0, IMlen,     0,      1,                    NULL,   IMlen)  /* stage#7 */
+
+//EMAX5A begin back_in mapdist=0
+    /*3*/ for (CHIP=0; CHIP<NCHIP; CHIP++) { /* output channels are parallelized by multi-chip (OC4/#chip) */
+      /*2*/ for (INIT1=1,LOOP1=BATCH,img=(0-M4)<<32|((0-IM4)&0xffffffff); LOOP1--; INIT1=0) {                                       /* mapped to FOR() on BR[63][1][0] */ /* stage#0 */
+        /*1*/ for (INIT0=1,LOOP0=M,cofs=(0-4LL)<<32|((0-4LL)&0xffffffff); LOOP0--; INIT0=0) {                                       /* mapped to FOR() on BR[63][0][0] */ /* stage#0 */
+                exe(OP_ADD,      &img,      img,             EXP_H3210,   INIT0?M4IM4:0, EXP_H3210, 0LL,         EXP_H3210, OP_NOP, 0LL,                  OP_NOP, 0LL);   /* stage#0 */
+                exe(OP_ADD,      &cofs,     INIT0?cofs:cofs, EXP_H3210,   4LL<<32|4LL,   EXP_H3210, 0LL,         EXP_H3210, OP_AND, 0xffffffffffffffffLL, OP_NOP, 0LL);   /* stage#0 */
+                exe(OP_ADD,      &iofs,     img,             EXP_H3210,   cofs,          EXP_H3210, 0LL,         EXP_H3210, OP_AND, 0x00000000ffffffffLL, OP_NOP, 0LL);   /* stage#1 */
+                exe(OP_ADD,      &oofs,     img,             EXP_H3210,   cofs,          EXP_H3210, 0LL,         EXP_H3210, OP_AND, 0xffffffff00000000LL, OP_NOP, 0LL);   /* stage#1 */
+                /****oc0*****/
+	        mop(OP_LDUWR, 1, &BR[2][0][1],               (Ull)op0[0], oofs,          MSK_W1,    (Ull)ot0[0], Mlen,      0,      0,                    NULL,   Mlen);  /* stage#2 */
+	        exe(OP_FML,      &AR[3][0],    kp0[0],       EXP_H3210,   BR[2][0][1],   EXP_H3210, 0LL,         EXP_H3210, OP_NOP, 0LL,                  OP_NOP, 0LL);   /* stage#3 */
+
+		back_in_core1( 3,  4,  1); /**** oc1*****/
+		back_in_core1( 4,  5,  2); /**** oc2*****/
+		back_in_core1( 5,  6,  3); /**** oc3*****/
+		back_in_core1( 6,  7,  4); /**** oc4*****/
+		back_in_core1( 7,  8,  5); /**** oc5*****/
+		back_in_core1( 8,  9,  6); /**** oc6*****/
+		back_in_core1( 9, 10,  7); /**** oc7*****/
+#if 0
+		back_in_core1(10, 11,  8); /**** oc8*****/
+		back_in_core1(11, 12,  9); /**** oc9*****/
+		back_in_core1(12, 13, 10); /****oc10*****/
+		back_in_core1(13, 14, 11); /****oc11*****/
+		back_in_core1(14, 15, 12); /****oc12*****/
+		back_in_core1(15, 16, 13); /****oc13*****/
+		back_in_core1(16, 17, 14); /****oc14*****/
+		back_in_core1(17, 18, 15); /****oc15*****/
+		back_in_final(18, 20);     /****OMAP(16)+2,OMAP(16)+4****/
+#endif
+		back_in_final(10, 12);     /****OMAP( 8)+2,OMAP( 8)+4****/
+	      }
+	    }
+	  }
+//EMAX5A end
+        }
+      }
+    }
+  }
+//EMAX5A drain_dirty_lmm
+#endif
+#ifdef XMAX_VALIDATE
+  count = 0;
+  for (img=0; img<BATCH; img++) {
+    for (ic=0; ic<IC; ic++) {
+      for (y=0; y<IM; y++) {
+	for (x=0; x<IM; x++) {
+	  float host = *(float*)&in0[(img*IC+ic)*IM*IM+y*IM+x];
+	  float xmax = *(float*)&i_inp[ic*IM*BATCH*IM+y*BATCH*IM+img*IM+x];
+	  if (udiff(host,xmax)>ERRTH) {
+	    count++;
+	    printf("[%d][%d][%d][%d]: in0=%7.5e(%8.8x) i_inp=%7.5e(%8.8x)\n", (Uint)img, (Uint)ic, (Uint)y, (Uint)x, host, *(Uint*)&host, xmax, *(Uint*)&xmax);
+	  }
+	}
+      }
+    }
+  }
+  if (count)
+    printf("Num of diffs 1-5: %d\n", count);
+#endif
+  xmax_cpyout(1, in0, BATCH, IC, i_inp, IM, IM, IC); /* in */
+#endif
+}

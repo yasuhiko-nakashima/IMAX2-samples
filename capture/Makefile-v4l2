@@ -1,0 +1,25 @@
+
+## Camera Capture program for FreeBSD/CentOS ##
+##   Copyright (C) 2012 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+PROJTOP	      = ../../
+OPTION        = -DV4L2
+PROGRAM       = capture-v4l2
+CC            = gcc
+CFLAGS        = -I/usr/local/include -O2 -msse2 -ffast-math $(OPTION)
+ASFLAGS       = 
+LDFLAGS       = 
+LIBFLAGS      = -L/usr/lib64 -L/usr/lib -L/usr/local/lib -lm -lX11 -lgcc -lv4l2
+OBJS	      =	capture.o
+SRCS	      =	capture.c
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(LDFLAGS) $(OBJS) -o $(PROGRAM) $(LIBFLAGS)
+
+clean:;		rm -f $(OBJS) core *~ *.s
+
+###

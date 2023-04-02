@@ -1,0 +1,14 @@
+make -f Makefile		all clean
+make -f Makefile.pth		all clean
+#make -f Makefile.emax5nc	all clean
+#make -f Makefile.emax6nc	all clean
+make -f Makefile-bsim		all clean
+make -f Makefile-bsim.pth	all clean
+#make -f Makefile-bsim.emax5nc	all clean
+#make -f Makefile-bsim.emax5	all clean
+make -f Makefile-csim		all clean
+make -f Makefile-csim.pth	all clean
+#make -f Makefile-csim.emax6nc	all clean
+#make -f Makefile-csim.emax6	all clean
+#make -f Makefile-cuda		all clean
+#make -f Makefile-mic		all clean

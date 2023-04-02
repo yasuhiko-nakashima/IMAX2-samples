@@ -1,0 +1,25 @@
+
+## Camera Capture program for FreeBSD  ##
+##   Copyright (C) 2012 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+PROJTOP	      = ../../
+OPTION	      = -DBKTR
+PROGRAM       = capture-bktr
+CC            = gcc
+CFLAGS        = -I/usr/local/include -O2 -m32 -msse2 -ffast-math $(OPTION)
+ASFLAGS       = --32
+LDFLAGS       = -m32
+LIBFLAGS      = -L/usr/lib64 -L/usr/lib -L/usr/local/lib -lm -lX11 -lgcc
+SRCS 	      =	capture.c
+OBJS	      =	capture.o
+
+all:		$(PROGRAM)
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(LDFLAGS) $(OBJS) -o $(PROGRAM) $(LIBFLAGS)
+
+clean:;		rm -f $(OBJS) core *~ *.s
+
+###

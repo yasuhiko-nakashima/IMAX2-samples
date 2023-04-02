@@ -1,0 +1,28 @@
+t=1
+                        M
+                                                           P
+                                                                                                        G
+t=2
+              M
+                              P
+                                                    G
+t=4
+           M
+                 P
+                          G
+t=8
+             M
+             P
+             G
+t=16
+                       M
+                 P
+         G
+t=32
+                                            M
+                              P
+          G
+t=64
+                                                                                        M
+                                                          P
+               G

@@ -1,0 +1,83 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION	      = -mstrict-align -DDEBUG -DCYCLECNT -DARMSIML -DEMAX5
+PROGRAM       =	mm-bsim.emax5nc inv-bsim.emax5nc cnn-bsim.emax5nc gather-bsim.emax5nc gdepth-bsim.emax5nc
+CPP           = aarch64-elf-cpp
+CC            = aarch64-elf-gcc
+CFLAGS        = -I. -O3 -Wno-attributes $(OPTION)
+AS            = aarch64-elf-as
+ASFLAGS       = 
+LD            = aarch64-elf-ld
+LDFLAGS       =	-static -M $(PROJTOP)/lib/asim64-lib/_map
+LIBS          =	-lgcc -lm -lc
+LIBFLAGS      = -L$(PROJTOP)/lib/gcc/aarch64-elf/4.8.2/ -L$(PROJTOP)/aarch64-elf/lib/
+OBJS          = mm.o inv.o cnn.o gather.o gdepth.o
+SRCS          = mm.c inv.c cnn.c gather.c gdepth.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~
+
+mm-bsim.emax5nc:mm.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+mm.o:		mm.c
+		$(CC) $(CFLAGS) -c $<
+
+inv-bsim.emax5nc:inv.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+inv.o:		inv.c
+		$(CC) $(CFLAGS) -c $<
+
+cnn-bsim.emax5nc:cnn.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+cnn.o:		cnn.c
+		$(CC) $(CFLAGS) -c $<
+
+gather-bsim.emax5nc:gather.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+gather.o:	gather.c
+		$(CC) $(CFLAGS) -c $<
+
+gdepth-bsim.emax5nc:gdepth.o
+		$(LD) $(LDFLAGS) -o $@ $(PROJTOP)/lib/asim64-lib/_start.o $< $(LIBFLAGS) --start-group $(LIBS) --end-group
+
+gdepth.o:	gdepth.c
+		$(CC) $(CFLAGS) -c $<
+
+###
+
+mm.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+inv.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+cnn.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+gather.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+gdepth.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c

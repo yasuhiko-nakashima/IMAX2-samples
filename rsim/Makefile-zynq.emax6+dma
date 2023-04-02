@@ -1,0 +1,37 @@
+
+export CPP     = cpp -P
+export CC      = gcc
+export CFLAGS  = -Wall -O1 -Wno-unknown-pragmas -funroll-loops -I/usr/local/include -DARMZYNQ -DEMAX6 -DFPDDMA
+export LDFLAGS = -L/usr/lib64 -L/usr/local/lib -lm -lrt -lX11 -lXext
+
+PROGRAM	      =	rsim-zynq.emax6+dma
+OBJS          =	rsim.o cnnet.o mnist.o tensor.o random.o xdisp.o monitor.o imax-emax6.o
+SRCS          =	($(OBJS:.o=.c))
+HEADERS       =	tensor.h global.h random.h 
+
+all:		$(PROGRAM)
+
+$(PROGRAM):	$(OBJS)
+		$(CC)  $(OBJS) -o $(PROGRAM) $(LDFLAGS) $(CFLAGS)
+
+imax-emax6.c:	imax.c
+		../../../proj-arm64/src/conv-mark/conv-mark $< > $<-mark.c
+		$(CPP) $(CFLAGS) $<-mark.c > $<-cppo.c
+		../../../proj-arm64/src/conv-c2c/conv-c2c $<-cppo.c
+
+.c.o:		$(HEADERS)
+		$(CC) $(CFLAGS) -c $<
+
+train:;		./$(PROGRAM) -t
+
+clean:;		rm -rf *.o *~ *-mark.c *-cppo.c *-emax6.c *-emax6s?.c
+
+###
+
+cnnet.o:	cnnet.h random.h monitor.h
+mnist.o:	global.h tensor.h
+monitor.o:	monitor.h
+random.o:	tensor.h random.h
+rsim.o:		global.h tensor.h cnnet.h random.h monitor.h
+tensor.o:	global.h tensor.h
+imax-emax6.o:	tensor.h cnnet.h emax6.h emax6lib.c

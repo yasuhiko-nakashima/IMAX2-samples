@@ -1,0 +1,2 @@
+./configure --prefix=../.. --disable-png --disable-libdvdcss-internal --disable-libvpx-lavc
+make

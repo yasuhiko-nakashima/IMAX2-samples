@@ -1,0 +1,30 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+PROJTOP	      = ../../
+OPTION        = -DDEBUG -DCYCLECNT
+PROGRAM       = gdisp
+CC            = gcc
+CFLAGS        = -m32 -I/usr/local/include -O3 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = ld
+LDFLAGS       = -m32
+LIBS          = -lX11 -lm -lc
+LIBFLAGS      = -L/usr/local/lib
+OBJS	      =	gdisp.o
+SRCS	      =	gdisp.c
+
+all:		$(PROGRAM)
+
+run:;		./$(PROGRAM) 472.pnm
+
+clean:;		rm -f $(OBJS) core *.s
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+###

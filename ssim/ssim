@@ -1,0 +1,19 @@
+#!/bin/csh -f
+set loc=`dirname $0`
+set nam=`echo $HOST | cut -c1-4`
+cd $loc
+switch ($HOSTTYPE)
+case 'x86_64-linux':
+ ./ssim-cent $*
+ breaksw
+case 'FreeBSD':
+ ./ssim-bsd $*
+ breaksw
+case 'aarch64-linux':
+ if ( $nam == 'cadp' ) then
+ ./ssim-fugaku $*
+ else
+ ./ssim-zynq $*
+ endif
+ breaksw
+endsw

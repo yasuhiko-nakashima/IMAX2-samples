@@ -1,0 +1,18 @@
+【ポインタを使う版】                  2017/9/24
+
+【Coolchipsグラフ用のパラメタ】
+
+                MC      PHI     GPU
+(MAXCORE)       16      64      64
+(MAXTHRD)       64      256     2K
+(MAXTH/C)       4       4       32
+
+TH              1-64    1-64    1-64
+CORE            16      64      64
+TH/CORE         4       4       32
+ROB/CORE        128     4       32
+L1DELAY         16      16      16
+L2DELAY         200     200     1000
+CCDELAY         150     150     15(shared)
+L1CAP           32K     32K     32K
+L2CAP           512K/C  512K/C  64K/SM

@@ -1,0 +1,3 @@
+#!/bin/csh
+make -f Makefile-bsd all clean
+make -f Makefile-bsd.emax6nc all clean

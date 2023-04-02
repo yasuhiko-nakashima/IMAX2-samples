@@ -1,0 +1,68 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION	      = -DDEBUG -DCYCLECNT -DEMAX5
+PROGRAM       =	mm.emax5nc inv.emax5nc cnn.emax5nc gather.emax5nc gdepth.emax5nc
+CPP           = cpp
+CC            = gcc
+CFLAGS        = -m32 -I/usr/local/include -O3 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = ld
+LDFLAGS       =	-m32
+LIBS          =	-lX11 -lXext -lm -lc
+LIBFLAGS      = -L/usr/local/lib
+OBJS          = mm.o inv.o cnn.o gather.o gdepth.o
+SRCS          = mm.c inv.c cnn.c gather.c gdepth.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~
+
+mm.emax5nc:	mm.o
+		$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+inv.emax5nc:	inv.o
+		$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+cnn.emax5nc:	cnn.o
+		$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+gather.emax5nc:	gather.o
+		$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+gdepth.emax5nc:	gdepth.o
+		$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+###
+
+mm.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+inv.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+cnn.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+gather.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c
+gdepth.o: ../../src/conv-c2b/emax5.h ../../src/conv-c2b/emax5lib.c

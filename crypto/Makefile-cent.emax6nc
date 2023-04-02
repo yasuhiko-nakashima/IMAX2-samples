@@ -1,0 +1,46 @@
+
+## EMAX6 Application Simulator         ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile-bsd/cent         native        : none
+## Makefile-bsd/cent.emax6nc native+EMAX6NC: -DEMAX6
+## Makefile-csim             csim          : -DARMSIML
+## Makefile-csim.emax6nc     csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6       csim+EMAX6    : -DARMSIML -DEMAX6          emax6_start->emax_start->syscall
+## Makefile-csim.emax6+dma   csim+EMAX6DMA : -DARMSIML -DEMAX6 -DFPDDMA emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc     ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6
+## Makefile-zynq.emax6       ZYNQ+EMAX6    : -DARMZYNQ -DEMAX6          emax6_start->udev_write
+## Makefile-zynq.emax6+dma   ZYNQ+EMAX6DMA : -DARMZYNQ -DEMAX6 -DFPDDMA emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION        = -DDEBUG -DCYCLECNT -DEMAX6
+PROGRAM       = sha256-cent.emax6nc
+CC            = gcc
+CFLAGS        =  -I/usr/local/include -O3 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = ld
+LDFLAGS       = 
+LIBS          = -lX11 -lXext -lm -lc
+LIBFLAGS      = -L/usr/local/lib
+OBJS	      =	sha256_test.o sha256.o
+SRCS	      =	sha256_test.c sha256.c
+
+all:		$(PROGRAM)
+
+run:;		./$(PROGRAM)
+
+clean:;		rm -f $(OBJS) core *.s
+
+$(PROGRAM):     $(OBJS)
+		$(CC) $(CFLAGS) -o $(PROGRAM) $(OBJS) $(LDFLAGS) $(LIBFLAGS) $(LIBS)
+
+###
+
+sha256.o:     ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

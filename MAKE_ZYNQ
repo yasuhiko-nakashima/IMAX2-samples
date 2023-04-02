@@ -1,0 +1,24 @@
+#!/bin/csh
+ (cd;sput proj-arm64/sample/{filter,mm_cnn_lf,stencil,stringsearch,test,crypto,fft,sort}/{M*,*.[ch]})
+
+sssh 'ssh arch20 "(cd proj-arm64/sample/filter;       ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/mm_cnn_lf;    ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/stencil;      ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/stringsearch; ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/test;         ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/crypto;       ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/fft;          ./MAKE_ZYNQ)"'
+sssh 'ssh arch20 "(cd proj-arm64/sample/sort;         ./MAKE_ZYNQ)"'
+ (cd;sget proj-arm64/sample/{filter,mm_cnn_lf,stencil,stringsearch,test,crypto,fft,sort}/[a-z]*zynq*emax6*)
+ (cd;sget proj-arm64/sample/mm_cnn_lf/mm*obj)
+
+#------------------------------
+ (cd;sput proj-arm64/sample/{rsim,ssim}/{M*,*.[ch]})
+
+sssh 'ssh arch20 "(cd proj-arm64/sample/rsim;         ./MAKE_ZYNQ)"'
+ (cd;sget proj-arm64/sample/rsim/rsim-zynq*)
+ (cd;sget proj-arm64/sample/rsim/*obj)
+
+sssh 'ssh arch20 "(cd proj-arm64/sample/ssim;         ./MAKE_ZYNQ)"'
+ (cd;sget proj-arm64/sample/ssim/ssim-zynq*)
+ (cd;sget proj-arm64/sample/ssim/*obj)

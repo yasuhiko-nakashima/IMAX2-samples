@@ -1,0 +1,12 @@
+gdisp   ... 力学ベース・グラフ分割アニメーション
+            gdisp <edge_file>
+            ex. gdisp facebook.edges.single+dist
+gverify ... 上記+(頂点色をKsvd/Kdijkstra結果に置き換え)
+            gdisp <edge_file> <cluster_info>
+            ex. gverify facebook.edges.single+dist facebook.edges.single+dist.Ksvd_8
+            ex. gverify facebook.edges.single+dist facebook.edges.single+dist.Kdijkstra_8
+ggen1   ... 人工グラフ生成ツール
+ggen2   ... 人工グラフ生成ツール
+ggen3   ... generates single island including start_vertex
+
+----

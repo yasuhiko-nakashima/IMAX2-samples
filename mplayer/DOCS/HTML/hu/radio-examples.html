@@ -1,0 +1,25 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><title>8.3. Példák</title><link rel="stylesheet" href="default.css" type="text/css"><meta name="generator" content="DocBook XSL Stylesheets V1.75.2"><link rel="home" href="index.html" title="MPlayer - The Movie Player"><link rel="up" href="radio.html" title="8. fejezet - Rádió"><link rel="prev" href="radio-tips.html" title="8.2. Használati tippek"><link rel="next" href="video.html" title="9. fejezet - Videó kimeneti eszközök"><link rel="preface" href="howtoread.html" title="Hogyan olvasd ezt a dokumentációt"><link rel="chapter" href="intro.html" title="1. fejezet - Bevezetés"><link rel="chapter" href="install.html" title="2. fejezet - Telepítés"><link rel="chapter" href="usage.html" title="3. fejezet - Használat"><link rel="chapter" href="advaudio.html" title="4. fejezet - Továbbfejlesztett audió használata"><link rel="chapter" href="cd-dvd.html" title="5. fejezet - CD/DVD használat"><link rel="chapter" href="tv-input.html" title="6. fejezet - TV bemenet"><link rel="chapter" href="tv-teletext.html" title="7. fejezet - Teletext"><link rel="chapter" href="radio.html" title="8. fejezet - Rádió"><link rel="chapter" href="video.html" title="9. fejezet - Videó kimeneti eszközök"><link rel="chapter" href="ports.html" title="10. fejezet - Portok"><link rel="chapter" href="mencoder.html" title="11. fejezet - A MEncoder használatának alapjai"><link rel="chapter" href="encoding-guide.html" title="12. fejezet - Kódolás a MEncoderrel"><link rel="chapter" href="faq.html" title="13. fejezet - Gyakran ismételt kérdések"><link rel="appendix" href="bugreports.html" title="A. függelék - Hogyan jelentsd a hibákat"><link rel="appendix" href="skin.html" title="B. függelék - MPlayer skin formátum"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">8.3. Példák</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="radio-tips.html">Előző</a> </td><th width="60%" align="center">8. fejezet - Rádió</th><td width="20%" align="right"> <a accesskey="n" href="video.html">Következő</a></td></tr></table><hr></div><div class="sect1" title="8.3. Példák"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="radio-examples"></a>8.3. Példák</h2></div></div></div><div class="informalexample"><p>
+Bemenet szabványos V4L-ről (line-in kábellel, mentés kikapcsolva):
+</p><pre class="screen">mplayer radio://104.4</pre><p>
+</p></div><div class="informalexample"><p>
+Bemenet szabványos V4L-ről (line-in kábellel, mentés kikapcsolva,
+V4Lv1 interfész):
+</p><pre class="screen">mplayer -radio driver=v4l radio://104.4</pre><p>
+</p></div><div class="informalexample"><p>
+A csatorna listán második csatorna lejátszása:
+</p><pre class="screen">mplayer -radio channels=104.4=Sibir,103.9=Maximm radio://2</pre><p>
+</p></div><div class="informalexample"><p>
+Hang átadása a PCI buszon a rádió kártya belső ADC-jéből.
+Ebben a példában a tuner második hangkártyaként szerepel
+(ALSA device hw:1,0). Az saa7134-alapú kártyákhoz vagy az
+<code class="systemitem">saa7134-alsa</code> vagy az <code class="systemitem">saa7134-oss</code>
+modult be kell tölteni.
+</p><pre class="screen">
+mplayer -rawaudio rate=32000 radio://2/capture \
+    -radio adevice=hw=1.0:arate=32000:channels=104.4=Sibir,103.9=Maximm
+</pre><p>
+</p><div class="note" title="Megjegyzés" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Megjegyzés</h3><p>
+Ha ALSA eszköz neveket használsz, a kettőspontokat egyenlőség
+jelekkel kell helyettesíteni, a periódusokat vesszők választják el.
+</p></div><p>
+</p></div></div><div class="navfooter"><hr><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="radio-tips.html">Előző</a> </td><td width="20%" align="center"><a accesskey="u" href="radio.html">Fel</a></td><td width="40%" align="right"> <a accesskey="n" href="video.html">Következő</a></td></tr><tr><td width="40%" align="left" valign="top">8.2. Használati tippek </td><td width="20%" align="center"><a accesskey="h" href="index.html">Tartalom</a></td><td width="40%" align="right" valign="top"> 9. fejezet - Videó kimeneti eszközök</td></tr></table></div></body></html>

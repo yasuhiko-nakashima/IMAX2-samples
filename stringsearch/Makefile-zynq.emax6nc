@@ -1,0 +1,55 @@
+
+## EMAX5/6 Application Simulator       ##
+##   Copyright (C) 2014 by NAIST UNIV. ##
+##         Primary writer: Y.Nakashima ##
+##                nakashim@is.naist.jp ##
+
+## -DEMAX5     ... with emaxnc/emax
+## -DEMAX6     ... with emaxnc/emax
+## -DARMSIML   ... with bsim/csim
+## -DARMZYNQ   ... with ZYNQ
+
+## Makefile              native        : none
+## Makefile.emax5nc      native+EMAX5NC: -DEMAX5
+## Makefile.emax6nc      native+EMAX6NC: -DEMAX6
+
+## Makefile-bsim         bsim          : -DARMSIML
+## Makefile-bsim.emax5nc bsim+EMAX5NC  : -DARMSIML -DEMAX5
+## Makefile-bsim.emax5   bsim+EMAX5    : -DARMSIML -DEMAX5 emax5_start->emax_start->syscall
+## Makefile-zynq.emax5nc(ZYNQ+EMAX5NC  : -DARMZYNQ -DEMAX5)
+## Makefile-zynq.emax5  (ZYNQ+EMAX5HW  : -DARMZYNQ -DEMAX5) emax5_start->udev_write
+
+## Makefile-csim         csim          : -DARMSIML
+## Makefile-csim.emax6nc csim+EMAX6NC  : -DARMSIML -DEMAX6
+## Makefile-csim.emax6   csim+EMAX6    : -DARMSIML -DEMAX6 emax6_start->emax_start->syscall
+## Makefile-zynq.emax6nc(ZYNQ+EMAX6NC  : -DARMZYNQ -DEMAX6)
+## Makefile-zynq.emax6  (ZYNQ+EMAX6HW  : -DARMZYNQ -DEMAX6) emax6_start->udev_write
+
+PROJTOP	      = ../../
+OPTION        = -mstrict-align -DDEBUG -DCYCLECNT -DARMZYNQ -DEMAX6
+PROGRAM       = search-zynq.emax6nc
+CPP           = cpp
+CC            = gcc
+CFLAGS        = -I. -O2 $(OPTION)
+AS            = as
+ASFLAGS       = 
+LD            = gcc
+LDFLAGS       = 
+LIBS          = -lm -lc -lX11
+LIBFLAGS      = 
+OBJS	      =	bmhasrch.o  bmhisrch.o  bmhsrch.o pbmsrch+rmm.o
+SRCS	      =	bmhasrch.c  bmhisrch.c  bmhsrch.c pbmsrch+rmm.c
+
+all:		$(PROGRAM)
+
+clean:;		rm -f *.o core *~
+
+search-zynq.emax6nc:	pbmsrch+rmm.o
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBFLAGS) $(LIBS)
+
+pbmsrch+rmm.o:	pbmsrch+rmm.c
+		$(CC) $(CFLAGS) -c $<
+
+###
+
+pbmsrch+rmm.o: ../../src/conv-c2c/emax6.h ../../src/conv-c2c/emax6lib.c

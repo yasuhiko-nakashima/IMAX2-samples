@@ -1,0 +1,8 @@
+#!/usr/local/bin/perl
+
+while (<>) {
+  if (/^(\d+)\s+(\d+).*$/)
+    { printf "%12d %12d\n", $1, $2; }
+}
+
+exit 0;

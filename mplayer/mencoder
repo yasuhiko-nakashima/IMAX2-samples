@@ -1,0 +1,15 @@
+#!/bin/csh -f
+switch ($HOSTTYPE)
+case 'x86_64-linux':
+ mplayer/mencoder-cent $*
+ breaksw
+case 'FreeBSD':
+ if (`uname -r` == '7.2-RELEASE') then
+  mplayer/mencoder-bsd7 $*
+ else if (`uname -r` == '12.0-RELEASE') then
+  mplayer/mencoder-bsd12 $*
+ else
+  mplayer/mencoder-bsd13 $*
+ endif
+ breaksw
+endsw
